@@ -1,0 +1,29 @@
+{
+	"name": "teleprompter-server",
+	"version": "0.0.1",
+	"description": "A flexible and customizable teleprompter system build for a web based workflow",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/FanatiQS/teleprompter-server.git"
+	},
+	"keywords": [
+		"teleprompter"
+	],
+	"author": "FanatiQS",
+	"license": "GPL-3.0-or-later",
+	"bugs": {
+		"url": "https://github.com/FanatiQS/teleprompter-server/issues"
+	},
+	"homepage": "https://github.com/FanatiQS/teleprompter-server#readme",
+	"dependencies": {
+		"bcrypt": "^3.0.2",
+		"rich-text": "^3.1.0",
+		"sharedb": "^1.0.0-beta.8",
+		"websocket-json-stream": "0.0.3",
+		"ws": "^6.1.0"
+	}
+}
