@@ -13,3 +13,4 @@
 * 2003:		Property 'pwd' does not match stored hash.
 
 * 3000:		Property 'id' in object is not a string.
+* 3001:		Property 'id' in object is a string that is longer than 128 characters.
