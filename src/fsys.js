@@ -7,7 +7,7 @@ const log = require('./log');
 
 
 // Add file extension 'type' to 'path'
-function addFileExt(path, type) {
+module.exports.addFileExt = function (path, type) {
 	// Get file and index of extension separator
 	const file = path.slice(path.lastIndexOf('/') + 1);
 	const dot = file.lastIndexOf('.');
@@ -27,14 +27,14 @@ function addFileExt(path, type) {
 
 
 // Create a file and its entire path containing 'content'
-function createFile(path, content, callback) {
+module.exports.createFile = function (path, content, callback) {
 	prepLoop((callback) => {
 		fs.writeFile(path, content, callback);
 	}, callback);
 }
 
 // Create directory and its entire path
-function createDir(path, callback) {
+module.exports.createDir = function (path, callback) {
 	prepLoop((callback) => {
 		fs.mkdir(path, callback);
 	}, callback);
@@ -80,8 +80,8 @@ function loop(callbacks, i) {
 
 
 //!! Watch file for changes
-const watchers = {};
-function watchFile(path, callback) {
+const watchers = module.exports.watchers = {};
+module.exports.watchFile = function (path, callback) {
 	// Get name of file and path to parent directory of 'path'
 	const split = path.lastIndexOf('/');
 	const parent = (split === -1) ? '.' : path.slice(0, split) || '/';
@@ -148,7 +148,7 @@ function watchFile(path, callback) {
 }
 
 // Setup watcher for JSON file
-function watchJSON(path, oldJSON) {
+module.exports.watchJSON = function (path, oldJSON) {
 	// Setup watcher for JSON file
 	return watchFile(path, (err, content) => {
 		// Error handling for errors
@@ -234,13 +234,3 @@ function watchJSON(path, oldJSON) {
 		});
 	});
 }
-
-// Export modules
-module.exports = {
-	addFileExt,
-	createFile,
-	createDir,
-	watchFile,
-	watchJSON,
-	watchers
-};
