@@ -81,7 +81,7 @@ function loop(callbacks, i) {
 
 //!! Watch file for changes
 const watchers = module.exports.watchers = {};
-module.exports.watchFile = function (path, callback) {
+const watchFile = module.exports.watchFile = function (path, callback) {
 	// Get name of file and path to parent directory of 'path'
 	const split = path.lastIndexOf('/');
 	const parent = (split === -1) ? '.' : path.slice(0, split) || '/';
