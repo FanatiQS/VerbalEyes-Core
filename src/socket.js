@@ -56,13 +56,13 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 	log("Creating new WebSocket server on" + ((server.server) ? ': [Webserver]' : " port: " + server.port));
 
 	// Setup WS server and apply adapter on new client for 'Client'
-	const wss = wsAdapter(new WS.Server(server, () => {
-		// Run callback function
-		callback();
+	const wss = wsAdapter(new WS.Server(server), Client);
 
-		// Log, successfully set up socket server
-		log("Successfully set up socket server");
-	}), Client);
+	// Run callback when socket server is set up
+	wss.on('listening', callback);
+
+	// Log, successfully set up socket server
+	wss.on('listening', () => log("Successfully set up socket server"));
 
 	// Error handling for errors on 'wss'
 	wss.on('error', (err) => {
