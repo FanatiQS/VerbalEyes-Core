@@ -12,21 +12,66 @@ const syncOrAsync = require('./syncOrAsync');
 function Loader(imported, timerGetter, callback) {
 	// Validate property of 'imported'
 	const check = (prop, backup) => {
-		// If property is a function, add it to this
-		if (typeof imported[prop] === 'function') {
-			this[prop] = syncOrAsync(imported[prop], prop, timerGetter);
+		const func = imported[prop] || backup;
+
+		// If 'func' is a function, add it to 'this'
+		if (typeof func === 'function') {
+			this[prop] = function () {
+				let err;
+
+				// Disable callback argument
+				arguments.length --;
+
+				// Link to callback argument
+				const exit = arguments[arguments.length];
+
+				// Create callback function and add timeout clear to callback argument
+				const callback = function () {
+					// Exit with an error if callback has already been called
+					if (err) {
+						exit(err);
+						return;
+					}
+					// Block any more calls of 'callback', clear timeout timer and exit with all arguments
+					else {
+						err = Error("This callback has already been called: " + prop);
+						err.code = 'BLOCKED';
+						clearTimeout(timeout);
+						exit(...arguments);
+					}
+				};
+
+				// Run 'func' with arguments and callback for async
+				try {
+					var result = func(...arguments, callback);
+				}
+				// Run 'callback' with cought synchronous error
+				catch (err) {
+					callback(err);
+					return;
+				}
+
+				// Run 'callback' with synchronous result
+				if (result !== undefined) {
+					callback(null, result);
+				}
+				// Create timeout for max wait on asynchronous return call
+				else if (!err) {
+					var timeout = setTimeout(() => {
+						const error = Error("Timed out waiting for asynchronous callback on: " + prop);
+						error.code = 'TIMEOUT';
+						exit(error);
+					}, timerGetter() || 1000);
+				}
+			};
 		}
-		// Error handling for if property is not a function
-		else if (imported.hasOwnProperty(prop)) {
-			throw "Property '" + prop + "' in custom script has to be a function: " + imported[prop];
+		// Error handling for if 'func' is not a function
+		else if (func) {
+			throw "Property '" + prop + "' in custom script has to be a function: " + func;
 		}
-		// Error handling for missing property in 'imported' and using default error handling
-		else if (backup === undefined) {
-			throw "Missing property '" + prop + "' in custom script";
-		}
-		// If property is missing and a backup function exists, add 'backup' to this instead
+		// Error handling for missing property in 'imported' and there is no 'backup'
 		else {
-			this[prop] = syncOrAsync(backup, prop, timerGetter);
+			throw "Missing property '" + prop + "' in custom script";
 		}
 	};
 
