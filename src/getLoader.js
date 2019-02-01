@@ -29,7 +29,6 @@ function Loader(imported, timerGetter, callback) {
 					// Exit with an error if callback has already been called
 					if (err) {
 						exit(err);
-						return;
 					}
 					// Block any more calls of 'callback', clear timeout timer and exit with all arguments
 					else {
