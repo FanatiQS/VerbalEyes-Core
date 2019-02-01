@@ -4,7 +4,6 @@ const path = require('path');
 
 const log = require('./log');
 const fsys = require('./fsys');
-const syncOrAsync = require('./syncOrAsync');
 
 
 
