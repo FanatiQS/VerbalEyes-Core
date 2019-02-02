@@ -72,4 +72,4 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 
 	// Return 'wss'
 	return wss;
-}
+};

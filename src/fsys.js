@@ -22,7 +22,7 @@ module.exports.addFileExt = function (path, type) {
 	const err = Error("Wrong file extension for '" + path + "', it needs to be a " + type + " file");
 	err.code = 'wrongtype';
 	throw err;
-}
+};
 
 
 
@@ -31,14 +31,14 @@ module.exports.createFile = function (path, content, callback) {
 	prepLoop((callback) => {
 		fs.writeFile(path, content, callback);
 	}, callback);
-}
+};
 
 // Create directory and its entire path
 module.exports.createDir = function (path, callback) {
 	prepLoop((callback) => {
 		fs.mkdir(path, callback);
 	}, callback);
-}
+};
 
 // Create setup for 'loop' function
 function prepLoop(action, callback) {
@@ -145,7 +145,7 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 			}
 		}
 	};
-}
+};
 
 // Setup watcher for JSON file
 module.exports.watchJSON = function (path, oldJSON) {
@@ -233,4 +233,4 @@ module.exports.watchJSON = function (path, oldJSON) {
 			}
 		});
 	});
-}
+};
