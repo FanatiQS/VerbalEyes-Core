@@ -51,6 +51,10 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 		log("Using custom socket server");
 		return Client;
 	}
+	// Error handling of unsupported 'server' types
+	else if (!(server instanceof Object)) {
+		throw Error("Unable to create WebSocket server with: " + server);
+	}
 
 	// Log, crating new websocket
 	log("Creating new WebSocket server on" + ((server.server) ? ': [Webserver]' : " port: " + server.port));
