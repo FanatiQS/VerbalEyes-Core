@@ -16,7 +16,7 @@ function watchConf(confInput, config) {
 	config._watcher = fsys.watchJSON(confInput, config);
 
 	// Log, set up config watcher
-	log("Watching config file:", /@1/, confInput);
+	log("Watching config file:", /@path/, confInput);
 }
 
 // Get config data
