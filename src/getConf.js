@@ -27,7 +27,14 @@ function getObj(confInput1) {
 		confInput1 = path.resolve(confInput1);
 
 		// Add file extension if nonexistent
-		confInput1 = fsys.addFileExt(confInput1, '.json');
+		try {
+			confInput1 = fsys.addFileExt(confInput1, '.json');
+		}
+		// Log, error message if 'confInput1' has the wrong file extension
+		catch (err) {
+			log.err(err.message);
+			throw err;
+		}
 
 		try {
 			// Get parsed JSON content of config file at path 'confInput1'
@@ -94,7 +101,9 @@ function getObj(confInput1) {
 	}
 	// Error handling for unsupported argument types
 	else {
-		throw TypeError("Unable to setup config, 'confInput1' needs to be an object or a string path to a JSON file");
+		const err = TypeError("Unable to setup config, 'confInput1' needs to be an object or a string path to a JSON file");
+		log.err(err.message);
+		throw err;
 	}
 }
 
