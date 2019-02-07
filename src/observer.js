@@ -3,7 +3,7 @@
 // Add middleware to objects property to run callback when value is updated
 module.exports = function observer(obj, key, callback) {
 	// Get original/current properties
-	let prop = Object.getOwnPropertyDescriptor(obj, key) || {};
+	const prop = Object.getOwnPropertyDescriptor(obj, key) || {};
 
 	// Create getter and setter linked to value if no getter or setter already exist
 	if (!(prop.get || prop.set)) {
@@ -16,9 +16,8 @@ module.exports = function observer(obj, key, callback) {
 	}
 
 	// Create setter function unless 'obj' is getter only
-	let setter;
 	if (prop.set) {
-		setter = function (value) {
+		var setter = function (value) {
 			// Run middleware with new and old property value
 			setter.mid(value, this[key]);
 
