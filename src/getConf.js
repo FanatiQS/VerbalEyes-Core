@@ -180,8 +180,8 @@ module.exports = function (confInput1, confInput2, observers) {
 	}
 
 	// Log, finnished setting up config with content of 'conf' unless it is empty
-	const confKeys = Object.keys(conf);
-	log("Completed config setup" + (!confKeys.length ? '' : " with settings:" + confKeys.map((key) => (key[0] === '_') ? null : '\n\t' + key + ': ' + conf[key]).join('')));
+	const confKeys = Object.keys(conf).filter((key) => key[0] !== '_');
+	log("Completed config setup" + (!confKeys.length ? '' : " with settings:" + confKeys.map((key) => '\n\t' + key + ': ' + conf[key]).join('')));
 
 	// Return 'conf' object
 	return conf;
