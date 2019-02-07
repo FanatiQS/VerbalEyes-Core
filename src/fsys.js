@@ -203,7 +203,9 @@ module.exports.watchJSON = function (path, oldJSON) {
 						}
 						// Hide property if it is a getter/setter
 						else {
-							Object.defineProperty(oldJSON, key, {enumerable: false});
+							Object.defineProperty(oldJSON, key, {
+								enumerable: false
+							});
 						}
 						log("Removed JSON property '" + key + "' with value '" + prev + "' from:", path);
 					}
@@ -223,9 +225,14 @@ module.exports.watchJSON = function (path, oldJSON) {
 			// Ignore properties starting with underscore
 			if (key[0] === '_') return;
 
-			// Add new property
 			try {
+				// Make property visible if it is hidden
+				if (oldJSON.hasOwnProperty(key)) Object.defineProperty(oldJSON, key, {enumerable: true});
+
+				// Add or update property
 				oldJSON[key] = newJSON[key];
+
+				// Log, added property
 				log("Added JSON property '" + key + "' with value '" + oldJSON[key] + "' to:", path);
 			}
 			// Catch and log error if updating property fails
