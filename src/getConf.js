@@ -34,7 +34,7 @@ function getObj(confInput1) {
 			const config = JSON.parse(fs.readFileSync(confInput1, 'utf-8'));
 
 			// Log, completed config setup
-			log("Successfully read config file:", /@1/, confInput1);
+			log("Successfully read config file:", /@path/, confInput1);
 
 			// Watch 'config'
 			watchConf(config, confInput1);
@@ -45,7 +45,7 @@ function getObj(confInput1) {
 			// Create new config file if it was not found
 			if (err.code === 'ENOENT') {
 				// Log, creating new file, it does not exist
-				log.err("Unable to locate config file. Creating a new one:", confInput1);
+				log.err("Unable to locate config file. Creating a new one:", /@path/, confInput1);
 
 				// Create new config object
 				const config = {_createFileCallback: null};
@@ -66,12 +66,12 @@ function getObj(confInput1) {
 
 					// Log and throw error if no error catcher function exists
 					if (err) {
-						log.err("Failed to create config file at:", confInput1);
+						log.err("Failed to create config file at:", /@path/, confInput1);
 						throw err;
 					}
 
 					// Log, created new file
-					log("Created new config file at:", confInput1);
+					log("Created new config file at:", /@path/, confInput1);
 
 					// Watch 'config'
 					watchConf(config, confInput1);
