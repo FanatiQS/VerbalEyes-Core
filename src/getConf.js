@@ -11,7 +11,7 @@ const observer = require('./observer');
 
 
 // Watch config file
-function watchConf(config, confInput) {
+function watchConf(confInput, config) {
 	// Watch file at path 'confInput'
 	config._watcher = fsys.watchJSON(confInput, config);
 
@@ -37,11 +37,12 @@ function getObj(confInput1) {
 			log("Successfully read config file:", /@path/, confInput1);
 
 			// Watch 'config'
-			watchConf(config, confInput1);
+			watchConf(confInput1, config);
 
 			// Return config object
 			return config;
-		} catch (err) {
+		}
+		catch (err) {
 			// Create new config file if it was not found
 			if (err.code === 'ENOENT') {
 				// Log, creating new file, it does not exist
@@ -74,7 +75,7 @@ function getObj(confInput1) {
 					log("Created new config file at:", /@path/, confInput1);
 
 					// Watch 'config'
-					watchConf(config, confInput1);
+					watchConf(confInput1, config);
 				});
 
 				// Return config object
