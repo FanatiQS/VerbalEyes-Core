@@ -5,6 +5,7 @@ const path = require('path');
 
 const log = require('./log');
 const fsys = require('./fsys');
+const isObj = require('./isObj');
 const observer = require('./observer');
 
 
@@ -87,7 +88,7 @@ function getObj(confInput1) {
 		}
 	}
 	// Return input object
-	else if (confInput1 instanceof Object) {
+	else if (isObj(confInput1)) {
 		return confInput1;
 	}
 	// Error handling for unsupported argument types
