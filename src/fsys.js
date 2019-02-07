@@ -154,7 +154,7 @@ module.exports.watchJSON = function (path, oldJSON) {
 	return watchFile(path, (err, content) => {
 		// Error handling for errors
 		if (err) {
-			log.err("Error reading contents of watched JSON file").ERROR(err);
+			log.err("Error reading contents of watched JSON file:", /@path/, path).ERROR(err);
 			return;
 		}
 
@@ -165,7 +165,7 @@ module.exports.watchJSON = function (path, oldJSON) {
 		// Error handling for if parsing failed
 		catch (err) {
 			err.content = content;
-			log.err("Unable to parse file:", path).ERROR(err);
+			log.err("Unable to parse file:", /@path/, path).ERROR(err);
 			return;
 		}
 
@@ -188,11 +188,11 @@ module.exports.watchJSON = function (path, oldJSON) {
 					if (hasValue) {
 						try {
 							oldJSON[key] = newJSON[key];
-							log("Updated JSON property '" + key + "' from '" + prev + "' to '" + oldJSON[key] + "' in:", path);
+							log("Updated JSON property '" + key + "' from '" + prev + "' to '" + oldJSON[key] + "' in:", /@path/, path);
 						}
 						// Catch and log error if updating property fails
 						catch (err) {
-							log.err("Unable to update property '" + key + "' in:", path).ERROR(err);
+							log.err("Unable to update property '" + key + "' in:", /@path/, path).ERROR(err);
 						}
 					}
 					// Delete or hide property if 'newJSON' does not contain that property
@@ -207,12 +207,12 @@ module.exports.watchJSON = function (path, oldJSON) {
 								enumerable: false
 							});
 						}
-						log("Removed JSON property '" + key + "' with value '" + prev + "' from:", path);
+						log("Removed JSON property '" + key + "' with value '" + prev + "' from:", /@path/, path);
 					}
 				}
 				// Error message for locked property not being updated
 				else if (hasValue) {
-					log.err("Unable to update locked property '" + key + "' in:", path);
+					log.err("Unable to update locked property '" + key + "' in:", /@path/, path);
 				}
 			}
 
@@ -233,11 +233,11 @@ module.exports.watchJSON = function (path, oldJSON) {
 				oldJSON[key] = newJSON[key];
 
 				// Log, added property
-				log("Added JSON property '" + key + "' with value '" + oldJSON[key] + "' to:", path);
+				log("Added JSON property '" + key + "' with value '" + oldJSON[key] + "' to:", /@path/, path);
 			}
 			// Catch and log error if updating property fails
 			catch (err) {
-				log.err("Unable to add property '" + key + "' to:", path).ERROR(err);
+				log.err("Unable to add property '" + key + "' to:", /@path/, path).ERROR(err);
 			}
 		});
 	});
