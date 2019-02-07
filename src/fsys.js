@@ -134,7 +134,7 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 	// Return path and function to stop watching target
 	return {
 		path: path,
-		close: function () {
+		close: () => {
 			// Delete callback for target
 			delete callbacks[target];
 
