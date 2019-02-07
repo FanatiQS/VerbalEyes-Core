@@ -79,7 +79,7 @@ function loop(callbacks, i) {
 
 
 
-//!! Watch file for changes
+// Watch file for changes
 const watchers = module.exports.watchers = {};
 const watchFile = module.exports.watchFile = function (path, callback) {
 	// Get name of file and path to parent directory of 'path'
@@ -88,7 +88,7 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 	const target = path.slice(split + 1);
 
 	// Create new watcher if one does not exist for the parent already
-	if (!watchers.hasOwnProperty(parent)) {
+	if (!watchers[parent]) {
 		// Create watcher
 		watchers[parent] = fs.watch(parent, (type, name) => {
 			console.log('im in fsys checking for watched files', name);//!!
@@ -114,9 +114,9 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 			console.log(this.callbacks.cooldown);*/
 			//!!## 'this' does not work anymore since I changed it to an arrow function
 
-			// Run callback with file content if 'name' has a callback in this watcher
-			if (callbacks.hasOwnProperty(name)) fs.readFile(path, 'utf-8', (err, content) => {
-				// Run callback unless 'target' was renamed from 'path' to something else
+			// Run callback with file content if 'name' is watched
+			if (callbacks[name]) fs.readFile(path, 'utf-8', (err, content) => {
+				// Run callback unless 'target' was renamed FROM 'path'
 				if (!err || err.code !== 'ENOENT') callbacks[name](err, content);
 			});
 		});
