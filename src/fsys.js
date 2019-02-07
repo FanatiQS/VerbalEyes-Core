@@ -165,7 +165,7 @@ module.exports.watchJSON = function (path, oldJSON) {
 		// Error handling for if parsing failed
 		catch (err) {
 			err.content = content;
-			log.err("Unable to parse '" + path + "'").ERROR(err);
+			log.err("Unable to parse file:", path).ERROR(err);
 			return;
 		}
 
