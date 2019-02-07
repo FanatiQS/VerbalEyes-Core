@@ -83,6 +83,7 @@ function loop(callbacks, i) {
 const watchers = module.exports.watchers = {};
 const watchFile = module.exports.watchFile = function (path, callback) {
 	// Get name of file and path to parent directory of 'path'
+	if (process.platform === 'win32') path = path.replace(/\\/g, '/');
 	const split = path.lastIndexOf('/');
 	const parent = (split === -1) ? '.' : path.slice(0, split) || '/';
 	const target = path.slice(split + 1);
