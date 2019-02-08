@@ -175,7 +175,7 @@ module.exports = function (confInput1, confInput2, observers) {
 		});
 
 		// Log, locked properties list
-		log("Locked properties in config:\n\t" + locked.join('\n\t'));
+		log((locked.length) ? "Locked properties in config:\n\t" + locked.join('\n\t') : "No locked properties in config");
 	}
 	// Error handling for if 'confInput2' is not an object
 	else if (confInput2) {
