@@ -9,7 +9,7 @@ const isObj = require('./isObj');
 
 
 // Create 'Loader' object to receive only valid functions from 'imported'
-function Loader(imported, timerGetter, callback) {
+function CustomLoader(imported, timerGetter, callback) {
 	// Validate property of 'imported'
 	const check = (prop, backup) => {
 		const func = imported[prop] || backup;
@@ -100,7 +100,6 @@ module.exports = function (input, timerGetter) {
 				fsys.addFileExt(input, '.js');
 
 				// Get and check custom script with absolute path
-				return new Loader(require(input), timerGetter, (list) => {
 					log("Successfully loaded custom script file:", input, list);
 				});
 			}
@@ -112,6 +111,7 @@ module.exports = function (input, timerGetter) {
 				return new Loader(input, timerGetter, (list) => {
 					log("Successfully loaded custom script object:", list);
 			else if (isObj(input)) {
+				return new CustomLoader(input, timerGetter, (list) => {
 				});
 			}
 			// Error handling for if 'input' is of an unsupported type
