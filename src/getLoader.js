@@ -23,43 +23,43 @@ function CustomLoader(imported, timerGetter, callback) {
 				arguments.length --;
 
 				// Link to callback argument
-				const exit = arguments[arguments.length];
+				const callback = arguments[arguments.length];
 
-				// Create callback function and add timeout clear to callback argument
-				const callback = function () {
-					// Exit with an error if callback has already been called
+				// Create 'exit' function
+				const exit = function () {
+					// Fire 'callback' with an error if 'exit' has already been called
 					if (err) {
-						exit(err);
+						callback(err);
 					}
-					// Block any more calls of 'callback', clear timeout timer and exit with all arguments
+					// Block any more calls of 'exit', clear timeout timer and fire 'callback' with all received arguments
 					else {
 						err = Error("This callback has already been called: " + prop);
 						err.code = 'BLOCKED';
 						clearTimeout(timeout);
-						exit(...arguments);
+						callback(...arguments);
 					}
 				};
 
-				// Run 'func' with arguments and callback for async
+				// Run 'func' with arguments and 'exit' callback for async
 				try {
-					var result = func(...arguments, callback);
+					var result = func(...arguments, exit);
 				}
-				// Run 'callback' with cought synchronous error
+				// Exit with cought synchronous error
 				catch (err) {
-					callback(err);
+					exit(err);
 					return;
 				}
 
-				// Run 'callback' with synchronous result
+				// Exit with synchronous result
 				if (result !== undefined) {
-					callback(null, result);
+					exit(null, result);
 				}
 				// Create timeout for max wait on asynchronous return call
 				else if (!err) {
 					var timeout = setTimeout(() => {
 						const error = Error("Timed out waiting for asynchronous callback on: " + prop);
 						error.code = 'TIMEOUT';
-						exit(error);
+						callback(error);
 					}, timerGetter() || 1000);
 				}
 			};
