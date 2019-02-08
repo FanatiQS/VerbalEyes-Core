@@ -6,6 +6,7 @@ const WS = require('ws');
 
 const log = require('./log');
 const isObj = require('./isObj');
+const httpStatic = require('./httpStatic');
 
 
 
@@ -63,6 +64,12 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 
 	// Setup WS server and apply adapter on new client for 'Client'
 	const wss = wsAdapter(new WS.Server(server), Client);
+
+	// Indicator for if websocket server was created internally or externally
+	wss.internal = true;
+
+	// Add system to add static files to http server
+	if (wss.options.port) httpStatic(wss._server);
 
 	// Run callback when socket server is set up
 	wss.on('listening', callback);
