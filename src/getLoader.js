@@ -4,6 +4,7 @@ const path = require('path');
 
 const log = require('./log');
 const fsys = require('./fsys');
+const isObj = require('./isObj');
 
 
 
@@ -104,13 +105,13 @@ module.exports = function (input, timerGetter) {
 				});
 			}
 			// Get custom script from 'input'
-			else if (input instanceof Object) {
 				// Log, started trying to get custom object
 				log("\nGetting custom script object");
 
 				// Check custom script object
 				return new Loader(input, timerGetter, (list) => {
 					log("Successfully loaded custom script object:", list);
+			else if (isObj(input)) {
 				});
 			}
 			// Error handling for if 'input' is of an unsupported type
