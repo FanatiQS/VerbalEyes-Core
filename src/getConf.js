@@ -168,9 +168,7 @@ module.exports = function (confInput1, confInput2, observers) {
 				get: function () {
 					return confInput2[key];
 				},
-				set: function () {
-					log.err("Unable to update '" + key + "' in config, property is locked");//!!## try to find another way of preventing crahses
-				},
+				set: undefined,
 				enumerable: true,
 				configurable: false
 			});
