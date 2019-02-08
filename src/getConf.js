@@ -130,7 +130,8 @@ module.exports = function (confInput1, confInput2, observers) {
 	});
 
 	// Add links to all 'confInput2' properties in 'conf'
-	if (confInput2) {
+	if (isObj(confInput2)) {
+		// Add locked properties
 		const locked = Object.keys(confInput2);
 		locked.forEach((key) => {
 			// Log, error message for if 'conf' already has the property
@@ -177,6 +178,10 @@ module.exports = function (confInput1, confInput2, observers) {
 
 		// Log, locked properties list
 		log("Locked properties in config:\n\t" + locked.join('\n\t'));
+	}
+	// Error handling for if 'confInput2' is not an object
+	else if (confInput2) {
+		log.err("Unable to add locked properties from:", confInput2);
 	}
 
 	// Log, finnished setting up config with content of 'conf' unless it is empty
