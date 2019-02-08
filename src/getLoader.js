@@ -84,50 +84,50 @@ function CustomLoader(imported, timerGetter, callback) {
 	callback('\n\t' + Object.keys(this).join('\n\t'));
 }
 
-// Get custom script functions
+// Get custom loader functions
 module.exports = function (input, timerGetter) {
 	if (input) {
 		try {
-			// Load custom script from file at 'input'
+			// Get custom loader from file at 'input'
 			if (typeof input === 'string') {
-				// Clarify path for console messages and for requireing the custom module
+				// Clarify path for console messages and for requireing the module
 				input = path.resolve(input);
 
-				// Log, started trying to get custom script file
-				log("\nGetting custom script file:", input);
+				// Log, started trying to get module
+				log("\nGetting custom loader file:", /@path/, input);
 
 				// Check file extension on 'input' for error
 				fsys.addFileExt(input, '.js');
 
-				// Get and check custom script with absolute path
-					log("Successfully loaded custom script file:", input, list);
+				// Get and check module with absolute path
 				return new CustomLoader(require(input), timerGetter, (list) => {
+					log("Successfully added custom loader file:", /@path/, input, list);
 				});
 			}
-			// Get custom script from 'input'
-				// Log, started trying to get custom object
-				log("\nGetting custom script object");
-
-				// Check custom script object
-					log("Successfully loaded custom script object:", list);
+			// Get custom loader from 'input' object
 			else if (isObj(input)) {
+				// Log, started trying to get object
+				log("\nGetting custom loader object");
+
+				// Check 'input' object
 				return new CustomLoader(input, timerGetter, (list) => {
+					log("Successfully added custom loader object:", list);
 				});
 			}
 			// Error handling for if 'input' is of an unsupported type
 			else {
-				log.err("Invalid type, 'customScript' in config needs to be a string path or object:", input);
+				log.err("Invalid type, 'loader' in config needs to be a string path or object:", input);
 			}
 		} catch (err) {
-			// Error handling for if custom script file was not found
+			// Error handling for if custom loader file was not found
 			if (err.code === 'MODULE_NOT_FOUND') {
-				log.err("Unable to get module, file not found:", input);
+				log.err("Unable to get custom loader module, file not found:", /@path/, input).ERROR(err);
 			}
 			// Error handling for if 'input' has the wrong file extension
 			else if (err.code === 'wrongtype') {
-				log.err("Unable to use 'customScript'. File extension needs to be blank or of javascript '.js' format:", input);
+				log.err("Unable to use 'loader'. File extension needs to be blank or of javascript '.js' format:", /@path/, input).ERROR(err);
 			}
-			// Error handling for if any 'check' failes
+			// Error handling for if any 'checks' fail
 			else if (typeof err === 'string') {
 				log.err(err);
 			}
@@ -137,14 +137,14 @@ module.exports = function (input, timerGetter) {
 			}
 		}
 
-		// Log, failed loading custom script
-		log("Failed to get custom script. Falling back to default systems");
+		// Log, failed adding custom loader
+		log("Failed to add custom loader. Falling back to default systems");
 	}
-	// Log, no 'customScript' property in config
+	// Log, no 'loader' property in config
 	else {
-		log("\nSkipping custom script");
+		log("\nSkipping custom loader");
 	}
 
-	// Return built-in loader if custom script was not loaded
+	// Return built-in loader if custom loader was not added
 	return require('./default_loader');
 };
