@@ -101,6 +101,7 @@ module.exports = function (input, timerGetter) {
 
 				// Get and check custom script with absolute path
 					log("Successfully loaded custom script file:", input, list);
+				return new CustomLoader(require(input), timerGetter, (list) => {
 				});
 			}
 			// Get custom script from 'input'
@@ -108,7 +109,6 @@ module.exports = function (input, timerGetter) {
 				log("\nGetting custom script object");
 
 				// Check custom script object
-				return new Loader(input, timerGetter, (list) => {
 					log("Successfully loaded custom script object:", list);
 			else if (isObj(input)) {
 				return new CustomLoader(input, timerGetter, (list) => {
