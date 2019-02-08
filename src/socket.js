@@ -5,19 +5,21 @@ const net = require('net');
 const WS = require('ws');
 
 const log = require('./log');
+const isObj = require('./isObj');
 
 
 
-// On new client connect, create new client object for 'connections'
+// On new client connection, create new 'Client' object and map to 'ws' events
 function wsAdapter(wss, Client) {
 	return wss.on('connection', (ws, req) => {
 		// Create new client object
-		const client = new Client(req.connection.remoteAddress, {/*!! replace this with just ws when done*/
-			send: function () {ws.send(...arguments);},
-			close: function () {ws.close(...arguments);}
+		const client = new Client(req.connection.remoteAddress, {
+			/*!! replace this with just ws when done*/
+			send: ws.send.bind(ws),
+			close: ws.close.bind(ws)
 		});
 
-		// Link ws events to client functions
+		// Link 'ws' events to client functions
 		ws.on('message', client.onmessage.bind(client));
 		ws.on('error', client.onerror.bind(client));
 		ws.on('close', client.onclose.bind(client));
@@ -41,7 +43,7 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 	else if (typeof server === 'number') {
 		server = {port: server};
 	}
-	// Return 'server' with new websocket connections adapted to 'connections' system
+	// Return 'server' with new websocket connections adapted to 'Client' system
 	else if (server.constructor.name === 'WebSocketServer') {
 		log("Using supplied WebSocket server");
 		return wsAdapter(server, Client);
@@ -52,7 +54,7 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 		return Client;
 	}
 	// Error handling of unsupported 'server' types
-	else if (!(server instanceof Object)) {
+	else if (!isObj(server)) {
 		throw Error("Unable to create WebSocket server with: " + server);
 	}
 
@@ -70,7 +72,7 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 
 	// Error handling for errors on 'wss'
 	wss.on('error', (err) => {
-		if (err.code === 'EADDRINUSE') log.err("This address is already in use:", err.address + ':' + err.port);
+		if (err.code === 'EADDRINUSE') log.err("This port is already in use:", err.port);
 		throw err;
 	});
 
