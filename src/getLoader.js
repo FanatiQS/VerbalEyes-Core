@@ -29,7 +29,7 @@ function CustomLoader(imported, timerGetter, callback) {
 				const exit = function () {
 					// Fire 'callback' with an error if 'exit' has already been called
 					if (err) {
-						callback(err);
+						callback(arguments[0] || err);
 					}
 					// Block any more calls of 'exit', clear timeout timer and fire 'callback' with all received arguments
 					else {
