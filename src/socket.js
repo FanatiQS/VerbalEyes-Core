@@ -75,7 +75,7 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 	wss.on('listening', callback);
 
 	// Log, successfully set up socket server
-	wss.on('listening', () => log("Successfully set up socket server"));
+	wss.on('listening', () => log("Successfully created WebSocket server"));
 
 	// Error handling for errors on 'wss'
 	wss.on('error', (err) => {
