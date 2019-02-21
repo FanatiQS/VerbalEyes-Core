@@ -108,7 +108,7 @@ function getMsg() {
 		return true;
 	});
 
-	// Export 'output' with 'styles'
+	// Export 'output' with properties
 	output.styles = styles;
 	output.type = type;
 	return output;
