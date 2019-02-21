@@ -144,7 +144,7 @@ const termMap = {
 };
 
 // Default styles per type
-const termDefault = {
+const termDefaults = {
 	number: [33],
 	boolean: [33],
 	null: [1],
@@ -164,14 +164,14 @@ function termMapper(value, i, arr) {
 	// Add default and custom styles to 'value' if it has custom styles
 	if (styles) {
 		return addTermStyles(
-			termDefault[type]
+			termDefaults[type]
 				.concat(styles.map((style) => termMap[style]))
 			, value
 		);
 	}
 
 	// Add default styles to 'value'
-	return addTermStyles(termDefault[type], value);
+	return addTermStyles(termDefaults[type], value);
 }
 
 // Add terminal styling to 'value'
