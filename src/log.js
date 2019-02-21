@@ -250,3 +250,32 @@ const file = new console.Console(
 
 
 
+// Log arguments and include prefix if 'this' has a 'prefix' property
+const log = function log() {
+	display.call(this, arguments);
+};
+
+// Log arguments as error message to normal places and error file
+log.err = function err() {
+	// Display 'msg' on normal places
+	const msg = display.call(this, [/red b u/, 'ERROR:', ...arguments]);
+
+	// Send 'msg' to error write stream file
+	file.error(util.format('%s', ...msg));
+
+	// Return function to handle error objects
+	return {ERROR};
+};
+
+// Send error objects to error write stream and console
+function ERROR() {
+	file.error(...arguments);
+	console.error(...arguments);
+}
+
+
+
+// Export log function containing other functions
+module.exports = log;
+
+
