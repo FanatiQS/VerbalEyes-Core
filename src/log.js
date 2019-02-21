@@ -31,6 +31,47 @@ const presets = {
 	'@ip': 'b'
 };
 
+
+
+// Boolean for if console leads to a terminal or not
+const tty = process.stdout._type === 'tty';
+
+// Display 'msg' in console, in file and add to database
+function display(args) {
+	// Sort out messages and styles from 'args'
+	const msg = getMsg(...args);
+
+	// Create prefix array
+	const prefix = (this && this.prefix) ? [this.prefix] : [];
+
+	// Log 'msg' stylized to terminal and unstlylized to file
+	console.log(
+		...prefix.map(prefixTermMapper),
+		...(tty) ? msg.map(termMapper) : msg
+	);
+	file.log(util.format('%s',...prefix, ...msg));
+
+	// Add 'msg' stylized for html to database and trigger listeners
+	const para = '<div' + prefix.map(prefixHtmlMapper).join('') + '>' + msg.map(htmlMapper).join(' ') + '</div>';
+	db.push(para);
+	listeners.forEach((callback) => callback(para));
+
+	// Return sorted 'msg'
+	return msg;
+}
+
+// Add terminal styles to 'value'
+function prefixTermMapper(value) {
+	return getMsg(/green b u/, value).map(termMapper).join(' ');
+}
+
+// Embed 'value' in html attributes
+function prefixHtmlMapper(value) {
+	return ' data-name="' + value + '" class="' + value + '"';
+}
+
+
+
 // Sort out expression styles in message arguments
 function getMsg() {
 	let index = 0;
@@ -71,41 +112,6 @@ function getMsg() {
 	output.styles = styles;
 	output.type = type;
 	return output;
-}
-
-
-
-//!!
-const tty = process.stdout._type === 'tty';
-
-// Display 'msg' in console, in file and add to database
-function display(msg) {
-	// Log 'msg' stylized to terminal and unstlylized to a file
-	console.log(...(tty) ? msg.map(termMapper) : msg);
-	file.log(util.format('%s', ...msg));
-
-	// Add 'msg' stylized for html to database and trigger listeners
-	const para = '<pre>' + msg.map(htmlMapper).join(' ') + '</pre>';
-	db.push(para);
-	listeners.forEach((callback) => callback(para));
-}
-
-// Display 'msg' on normal places and error write stream file
-function displayErr(msg) {
-	// Display 'msg' in console, in file and add to database
-	display(msg);
-
-	// Send 'msg' to error write stream file
-	file.error(...msg.slice(1));
-
-	// Return function to handle error objects
-	return {ERROR};
-}
-
-// Send error objects to error write stream and console
-function ERROR() {
-	file.error(...arguments);
-	console.error(...arguments);
 }
 
 
