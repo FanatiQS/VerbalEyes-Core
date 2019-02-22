@@ -83,11 +83,22 @@ Custom scripts are javascript files that load the projects and its documents...
 * 'getProjs' optional
 
 ### Errors:
+#### Init:
 * "Invalid type, 'customLoader' in config needs to be a string path or object:", input
 * "Property '" + prop + "' in custom script has to be a function: " + func
 * "Missing property '" + prop + "' in custom script"
 
+#### getProjs:
+* "Timed out getting projects to preload"
+* "List of projects to preload has already been received"
+* "Custom loader got an error in 'getProjs' when trying to get projects list"
+* "Returned value from 'getProjs' needs to be an array:", list
 
+#### getProj:
+* "Timed out getting project settings for:", projID
+* "Settings for '" + projID + "' has already been received"
+* "Custom loader got an error when trying to load proj:", projID
+* "Returned value from 'getProj' needs to be an object:", settings
 
 
 
