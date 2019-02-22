@@ -161,6 +161,15 @@ This is what is used for communication between the server and the clients. The a
 
 
 ## Events:
+* Event listeners can be added using the 'on' method.
+* It has two arguments, an 'event' string and a callback function. If any of them are the wrong type, a 'TypeError' will be thrown.
+* If an event is added to a non-existing event, an error will be thrown.
+
+### Errors:
+* "Event needs to be a string: " + event
+* "Callback needs to be a function: " + callback
+* "No listener for event: " + event
+
 * createConf:
 	* An event that is called if the config file didn't exist and was created. If no listeners exist and the server fails to create the new config file, the server will crash instead.
 	* It has two arguments, err and the path to the file.
