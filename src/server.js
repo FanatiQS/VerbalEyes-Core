@@ -40,7 +40,7 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 	// Add client creator with parent server prefilled
 	this.Client = Client.bind(null, this);
 
-	// Uniq ID for clients
+	// Uniq incrementing ID for clients
 	this.clients = 0;
 
 	// Library for all projects to live in
