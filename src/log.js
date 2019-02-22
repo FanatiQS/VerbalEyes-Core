@@ -13,16 +13,6 @@ const util = require('util');
 
 
 
-/*
-	log: 		log.txt, 	console, 	db,
-	err: 		log.txt, 	console, 	db, 	err.txt,
-	ERROR: 					console, 			err.txt,
-	own log: 	log.txt, 	console, 	db, 				personal db
-	own err: 	log.txt, 	console, 	db, 	err.txt, 	personal db
-*/
-
-
-
 // Preset styles
 const presets = {
 	'@path': 'u cyan',
