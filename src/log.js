@@ -5,7 +5,7 @@ const util = require('util');
 
 /*
  * POSSIBLE STYLES
- * text color			 black, red, green, yellow, blue, magenta, cyan, white
+ * text color			 black, red, green, yellow, blue, magenta, cyan, white, gray
  * background colors	_black, _red...
  * styles				b=bold, i=italic, u=underline
  * @ is for presets, what is immidiately after @ is the name of the preset
