@@ -275,3 +275,30 @@ function ERROR() {
 module.exports = log;
 
 
+
+// Get log functions adding their messages to a buffer
+log.buffer = function () {
+	const buffer = [];
+
+	// Create 'log' and 'err' functions bound to 'buffer'
+	const output = addToBuffer.bind([buffer, log]);
+	output.err = addToBuffer.bind([buffer, log.err]);
+
+	// Create 'flush' function bound to 'buffer'
+	output.flush = bufferFlush.bind(buffer);
+
+	// Return buffering 'log' function
+	return output;
+}
+
+// Push arguments with callback to 'buffer'
+function addToBuffer() {
+	arguments.callback = this[1];
+	this[0].push(arguments);
+}
+
+// Call every buffered message with its callback, setting 'this' to 'self'
+function bufferFlush(self) {
+	this.forEach((value) => value.callback.call(self, ...value));
+}
+
