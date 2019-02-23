@@ -235,6 +235,13 @@ function htmlMapper(value, i, arr) {
 const db = [];
 const listeners = [];
 
+// Getter for HTML console messages in 'db'
+db.get = () => db.join(' ');
+
+// Add listener to 'listeners'
+listeners.subscribe = (callback) => listeners.push(callback);
+
+
 
 
 // Create log file streams
@@ -271,11 +278,6 @@ function ERROR() {
 
 
 
-// Export log function containing other functions
-module.exports = log;
-
-
-
 // Get log functions adding their messages to a buffer
 log.buffer = function () {
 	const buffer = [];
@@ -304,10 +306,12 @@ function bufferFlush(self) {
 
 
 
-// Get HTML console messages added to 'db'
-log.get = () => db.join(' ');
-log.subscribe = (callback) => listeners.push(callback);
+// Export log function containing other functions
+module.exports = log;
 
+// Add db getter and listener createor
+log.get = db.get;
+log.subscribe = listeners.subscribe;
 
 
 
