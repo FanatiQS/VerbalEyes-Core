@@ -250,16 +250,9 @@ function htmlMapper(value, i, arr) {
 
 
 
-// Database for messages and listeners listening for new messages
+// Database for html messages and listeners listening for new html messages
 const db = [];
 const listeners = [];
-
-// Getter for HTML console messages in 'db'
-db.get = () => db.join(' ');
-
-// Add listener to 'listeners'
-listeners.subscribe = (callback) => listeners.push(callback);
-
 
 
 
@@ -328,9 +321,9 @@ function bufferFlush(self) {
 // Export log function containing other functions
 module.exports = log;
 
-// Add db getter and listener createor
-log.get = db.get;
-log.subscribe = listeners.subscribe;
+// Add HTML getter and listener creator
+log.get = () => db.join(' ');
+log.subscribe = (callback) => listeners.push(callback);
 
 
 
