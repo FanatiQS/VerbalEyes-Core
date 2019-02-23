@@ -57,10 +57,19 @@ function display(args) {
 	);
 	file.log(util.format('%s',...prefix, ...msg));
 
-	// Add 'msg' stylized for html to database and trigger listeners
-	const para = '<div' + prefix.map(prefixHtmlMapper).join('') + '>' + msg.map(htmlMapper).join(' ') + '</div>';
-	db.push(para);
-	listeners.forEach((callback) => callback(para));
+
+
+	// Get 'msg' stylized for html
+	const html = '<div' + prefix.map(prefixHtmlMapper).join('') + '>' + msg.map(htmlMapper).join(' ') + '</div>';
+
+	// Push 'html' to the database
+	db.push(html);
+
+	// Limit size of database
+	if (db.length > (module.exports.dbMax || 1000)) db.shift();
+
+	// Supply all listeners with 'html'
+	listeners.forEach((callback) => callback(html));
 
 	// Return sorted 'msg'
 	return msg;
