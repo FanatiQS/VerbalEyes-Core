@@ -58,11 +58,11 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 	this.triggers = {};
 
 	// Create trigger for when config file is created and add it to 'conf' when listeners are added
-	this.addTrigger('createConf', (trigger) => {
-		if (this.conf._createFileCallback === null) {
+	if (this.conf._createFileCallback === null) {
+		this.addTrigger('createConf', (trigger) => {
 			this.conf._createFileCallback = trigger;
-		}
-	});
+		});
+	}
 
 	// Create trigger for when socket server is set up if it is created internally
 	if (this.socketServer.internal) this.socketServer.on('listening', this.addTrigger('socketOpen'));
