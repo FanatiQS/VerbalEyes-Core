@@ -32,7 +32,7 @@ const util = require('util');
 // Preset styles
 const presets = {
 	'@path': 'u cyan',
-	'@!': '1',
+	'@!': 'b u red',
 	'@prefix': 'yellow',
 	'@ip': 'b'
 };
