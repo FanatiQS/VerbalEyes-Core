@@ -5,10 +5,16 @@ const util = require('util');
 
 /*
  * POSSIBLE STYLES
- * text color			 black, red, green, yellow, blue, magenta, cyan, white, gray
+ * text color			black, red, green, yellow,
+ 						blue, magenta, cyan, white, gray
  * background colors	_black, _red...
  * styles				b=bold, i=italic, u=underline
  * @ is for presets, what is immidiately after @ is the name of the preset
+
+ * log 					logs message to console, logfile and html db
+ * err 					logs red "ERROR:" + message to same as 'log' + errfile
+ * ERROR 				property in err return logs arguments to console + errfile
+ * if log or err is placed as a property on an object with a 'prefix' property, that will be put in front of the message
  */
 
 
