@@ -58,11 +58,9 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 	this.triggers = {};
 
 	// Create trigger for when config file is created and add it to 'conf' when listeners are added
-	if (this.conf._createFileCallback === null) {
-		this.addTrigger('createConf', (trigger) => {
-			this.conf._createFileCallback = trigger;
-		});
-	}
+	if (this.conf._createFileCallback === null)
+	this.addTrigger('createConf', (trigger) =>
+	this.conf._createFileCallback = trigger);
 
 	// Create trigger for when socket server is set up if it is created internally
 	if (this.socketServer.internal) this.socketServer.on('listening', this.addTrigger('socketOpen'));
@@ -202,6 +200,9 @@ Server.prototype.on = function (event, callback) {
 	// Error handling for malformed arguments
 	if (typeof event !== 'string') throw TypeError("Event needs to be a string: " + event);
 	if (typeof callback !== 'function') throw TypeError("Callback needs to be a function: " + callback);
+
+	// Abort if 'event' is not valid
+	if (!trigger) return;
 
 	// Add callback to 'listeners' for 'event'
 	trigger.listeners.push(callback);
