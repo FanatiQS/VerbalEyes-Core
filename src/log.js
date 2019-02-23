@@ -94,7 +94,7 @@ function getMsg() {
 	const type = [];
 
 	// Loop over all arguments sorting out expressions
-	const output = [...arguments].filter((value, i, arr) => {
+	const output = [...arguments].filter((value) => {
 		// Add expressions as strings in array to 'styles'
 		if (value instanceof RegExp) {
 			styles[index] = [].concat(...value.toString()
@@ -109,7 +109,7 @@ function getMsg() {
 					// Use 'value' as style
 					return elm;
 				}
-			));
+				));
 
 			// Filter out expression
 			return;
@@ -221,7 +221,7 @@ const htmlMap = {
 	b: 'font-weight: bold',
 	i: 'font-style: italic',
 	u: 'text-decoration: underline'
-}
+};
 
 // Add HTML styles to values
 function htmlMapper(value, i, arr) {
@@ -303,7 +303,7 @@ log.buffer = function () {
 
 	// Return buffering 'log' function
 	return output;
-}
+};
 
 // Push arguments with callback to 'buffer'
 function addToBuffer() {
