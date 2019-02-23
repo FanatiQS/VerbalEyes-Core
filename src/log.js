@@ -324,6 +324,3 @@ module.exports = log;
 // Add HTML getter and listener creator
 log.get = () => db.join(' ');
 log.subscribe = (callback) => listeners.push(callback);
-
-
-
