@@ -63,7 +63,7 @@ function prefixTermMapper(value) {
 
 // Embed 'value' in html attributes
 function prefixHtmlMapper(value) {
-	return ' data-name="' + value + '" class="' + value + '"';
+	return ' data-prefix="' + value + '" </div><span class="prefix">' + value + '</span';
 }
 
 
