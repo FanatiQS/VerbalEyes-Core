@@ -49,6 +49,9 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 	// List of clients connected using 'autologin'
 	this.librarySlaves = [];
 
+	// Get, or create a new, socket server
+	this.socketServer = socketServer(server, this.conf.port, this.Client);
+
 
 
 	// Storage for event triggers
@@ -61,8 +64,8 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 		}
 	});
 
-	// Get, or create a new, socket server
-	this.socketServer = socketServer(server, this.conf.port, this.Client, this.addTrigger('socketOpen'));
+	// Create trigger for when socket server is set up if it is created internally
+	if (this.socketServer.internal) this.socketServer.on('listening', this.addTrigger('socketOpen'));
 
 
 

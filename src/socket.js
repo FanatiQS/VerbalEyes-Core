@@ -28,7 +28,7 @@ function wsAdapter(wss, Client) {
 }
 
 // Set up socket server
-module.exports = function createSocketServer(server, port, Client, callback) {
+module.exports = function createSocketServer(server, port, Client) {
 	// Log, setting up websocket server
 	log("\nSetting up socket server");
 
@@ -70,9 +70,6 @@ module.exports = function createSocketServer(server, port, Client, callback) {
 
 	// Add system to add static files to http server
 	if (wss.options.port) httpStatic(wss._server);
-
-	// Run callback when socket server is set up
-	wss.on('listening', callback);
 
 	// Log, successfully set up socket server
 	wss.on('listening', () => log("Successfully created WebSocket server"));
