@@ -68,7 +68,7 @@ function getObj(confInput1) {
 
 					// Fire 'callback' if it exists and return
 					if (callback) {
-						callback(err, confInput1);
+						callback(err, config, confInput1);
 						if (err) return;
 					}
 
