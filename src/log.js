@@ -302,3 +302,12 @@ function bufferFlush(self) {
 	this.forEach((value) => value.callback.call(self, ...value));
 }
 
+
+
+// Get HTML console messages added to 'db'
+log.get = () => db.join(' ');
+log.subscribe = (callback) => listeners.push(callback);
+
+
+
+
