@@ -126,7 +126,7 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 		watchers[parent].callbacks = {};
 	}
 
-	// Get callbacks folder
+	// Get callbacks object
 	const callbacks = watchers[parent].callbacks;
 
 	// Add callback to watcher
