@@ -159,11 +159,9 @@ This is what is used for communication between the server and the clients. The a
 
 
 
-
 ## Event listeners:
 * Event listeners can be added using the 'on' method.
 * It has two arguments, an 'event' string and a callback function. If any of them are the wrong type, a 'TypeError' will be thrown.
-* If an event is added to a non-existing event, an error will be thrown.
 
 ### Events
 * createConf:

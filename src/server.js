@@ -200,9 +200,6 @@ Server.prototype.on = function (event, callback) {
 	if (typeof event !== 'string') throw TypeError("Event needs to be a string: " + event);
 	if (typeof callback !== 'function') throw TypeError("Callback needs to be a function: " + callback);
 
-	// Error handling for if 'event' does not exist in 'triggers'
-	if (!trigger) throw Error("No listener for event: " + event);
-
 	// Add callback to 'listeners' for 'event'
 	trigger.listeners.push(callback);
 
