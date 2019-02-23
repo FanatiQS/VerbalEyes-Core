@@ -49,8 +49,15 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 	// List of clients connected using 'autologin'
 	this.librarySlaves = [];
 
-	// Get, or create a new, socket server
-	this.socketServer = socketServer(server, this.conf.port, this.Client);
+
+
+	// Counter for when everything is closed
+	this.closedCount = 0;
+
+	// Add callbacks for when 'conf' watcher is closed
+	if (this.conf._watcher) this.conf._watcher.callbacks.push((path) => {
+		log(/@!/, "Stopped waching config file:", /@path/, path);
+	}, this.onClosed());
 
 
 
@@ -63,7 +70,10 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 	this.conf._createFileCallback = trigger);
 
 	// Create trigger for when socket server is set up if it is created internally
-	if (this.socketServer.internal) this.socketServer.on('listening', this.addTrigger('socketOpen'));
+	if (this.socketServer.internal) {
+		this.socketServer.on('listening', this.addTrigger('socketOpen'));
+		this.socketServer.on('close', this.onClosed());
+	}
 
 
 
@@ -224,6 +234,15 @@ Server.prototype.close = function () {
 
 	// Close websocket server if it was created internally
 	if (this.socketServer.internal) this.socketServer.close();
+};
+
+// Add this to closable systems to check for when everything is closed
+Server.prototype.onClosed = function () {
+	this.closedCount++;
+	return () => {
+		this.closedCount--;
+		if (!this.closedCount) log(/@!/, "Teleprompter server shut down!");
+	};
 };
 
 // Add static files served by http server created internally

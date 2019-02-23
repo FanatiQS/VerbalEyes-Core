@@ -135,7 +135,8 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 	// Return path and function to stop watching target
 	return {
 		path: path,
-		close: () => {
+		callbacks: [],
+		close: function () {
 			// Delete callback for target
 			delete callbacks[target];
 
@@ -145,8 +146,8 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 				delete watchers[parent];
 			}
 
-			// Log, stopped wathing file
-			log(/@!/, "Stopped waching:", /@path/, path);
+			// Run all callbacks in 'callbacks' array in return object
+			this.callbacks.forEach((callback) => callback(this.path));
 		}
 	};
 };
