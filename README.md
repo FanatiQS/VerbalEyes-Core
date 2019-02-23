@@ -167,6 +167,7 @@ This is what is used for communication between the server and the clients. The a
 * createConf:
 	* An event that is called if the config file didn't exist and was created. If no listeners exist and the server fails to create the new config file, the server will crash instead.
 	* It has three arguments, err, config object and the path to the file.
+	* If it gets an error, then the config object will not have a file watched to receive updates on properties from. The config object can still be updated manually. Everything else should work as normal.
 * socketOpen:
 	* Called when the server finishes creating a new websocket server.
 	* No arguments.
