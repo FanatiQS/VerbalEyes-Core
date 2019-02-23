@@ -144,6 +144,9 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 				watchers[parent].close();
 				delete watchers[parent];
 			}
+
+			// Log, stopped wathing file
+			log(/@!/, "Stopped waching:", /@path/, path);
 		}
 	};
 };
