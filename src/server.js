@@ -11,8 +11,6 @@ const socketServer = require('./socket');
 
 
 
-// Identity number used when creating a new server
-let serverID = 0;
 
 // Create a new teleprompter server
 const Server = module.exports = function SayghtServer(server, confInput1, confInput2) {
@@ -29,9 +27,6 @@ const Server = module.exports = function SayghtServer(server, confInput1, confIn
 			});
 		}
 	});
-
-	// Server identifier
-	this.identifier = this.conf.identifier || "TeleprompterServer_" + serverID++;
 
 	// Get custom- or default loader
 	this.loader = getLoader(this.conf.loader, () => this.conf.timeout);
