@@ -1,5 +1,8 @@
 'use strict';
 
+const ShareDB = require('sharedb');
+const richtext = require('rich-text');
+
 const log = require('./log');
 const isObj = require('./isObj');
 const Client = require('./client');
@@ -9,6 +12,9 @@ const httpStatic = require('./httpStatic');
 const socketServer = require('./socket');
 
 
+
+// Register richtext format in ShareDB
+ShareDB.types.register(richtext.type);
 
 
 
@@ -168,7 +174,11 @@ Server.prototype.addProj = function (projID, init, callback) {
 				this.library[projID] = {
 					id: projID,
 					clients: [],
-					settings: settings
+					settings: settings,
+					sharedb: new ShareDB({
+						disableDocAction: true,
+						disableSpaceDelimitedActions: true
+					})
 				};
 				callback(this.library[projID]);
 				return;
