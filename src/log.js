@@ -260,7 +260,7 @@ const listeners = [];
 const options = {flags: 'a'};
 const file = new console.Console(
 	fs.createWriteStream('log.txt', options),
-	fs.createWriteStream('err.txt', options)
+	fs.createWriteStream('error.txt', options)
 );
 
 
