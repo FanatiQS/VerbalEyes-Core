@@ -10,13 +10,12 @@ const socketServer = require('./socket');
 
 
 
-//!!## TeleprompterServer | use this when updateing from the temp name
 
 // Identity number used when creating a new server
 let serverID = 0;
 
 // Create a new teleprompter server
-const Server = module.exports = function TeleprompterServer(server, confInput1, confInput2) {
+const Server = module.exports = function SayghtServer(server, confInput1, confInput2) {
 	// Log, started server setup
 	log("Teleprompter server started...");
 
