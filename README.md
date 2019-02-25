@@ -179,3 +179,12 @@ This is what is used for communication between the server and the clients. The a
 * "Event needs to be a string: " + event
 * "Callback needs to be a function: " + callback
 * "No listener for event: " + event
+
+### Log
+The log system prints to multiple locations.
+* Logs can be found in the console and the log file
+* Errors can be found in the console, the log file and the error file. In the console and the error file, it might be followed by an error object with more information about the error.
+* Both logs and errors can also be viewed in HTML.
+* HTML logs can be fetched with the 'get' function
+* New messages can be added easily with the 'subscribe' function. It has the new message in html as the first argument. (To send the html to a web-browser and push new 'subscribed' messages to it, the easiest way is probably to use websockets).
+* The HTML database has a limit of how many messages it saves. Default is 1000 but it can be changed with the 'dbMax' property.
