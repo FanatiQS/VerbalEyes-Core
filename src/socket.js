@@ -13,12 +13,20 @@ const httpStatic = require('./httpStatic');
 // On new client connection, create new 'Client' object and map to 'ws' events
 function wsAdapter(wss, Client) {
 	return wss.on('connection', (ws, req) => {
+		// Get url query parameter 'name'
+		const start = (req.url.indexOf('name=', req.url.indexOf('?') + 1 || req.url.length) + 1 || req.url.length) + 4;
+		const name = req.url.slice(start, (req.url.indexOf('&', start) + 1 || req.url.length + 1) - 1) || null;
+
 		// Create new client object
-		const client = new Client(req.connection.remoteAddress, {
-			/*!! replace this with just ws when done*/
-			send: ws.send.bind(ws),
-			close: ws.close.bind(ws)
-		});
+		const client = new Client(
+			req.connection.remoteAddress,
+			name,
+			{
+				/*!! replace this with just ws when done*/
+				send: ws.send.bind(ws),
+				close: ws.close.bind(ws)
+			}
+		);
 
 		// Link 'ws' events to client functions
 		ws.on('message', client.onmessage.bind(client));
