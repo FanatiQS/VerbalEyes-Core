@@ -254,11 +254,14 @@ const listeners = [];
 
 
 
+// Make 'logs' directory if it does not exist
+if (!fs.existsSync('logs')) fs.mkdirSync('logs');
+
 // Create log file streams
 const options = {flags: 'a'};
 const file = new console.Console(
-	fs.createWriteStream('log.txt', options),
-	fs.createWriteStream('error.txt', options)
+	fs.createWriteStream('logs/log.txt', options),
+	fs.createWriteStream('logs/error.txt', options)
 );
 
 
