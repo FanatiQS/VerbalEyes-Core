@@ -64,7 +64,7 @@ function display(args) {
 	db.push(html);
 
 	// Limit size of database
-	if (db.length > (module.exports.dbMax || 1000)) db.shift();
+	if (db.length > (module.exports.dbMax)) db.shift();
 
 	// Supply all listeners with 'html'
 	listeners.forEach((callback) => callback(html));
@@ -322,6 +322,7 @@ function bufferFlush(self) {
 // Export log function containing other functions
 module.exports = log;
 
-// Add HTML getter and listener creator
+// Add HTML getter, listener creator and max HTML messages number
 log.get = () => db.join(' ');
 log.subscribe = (callback) => listeners.push(callback);
+log.dbMax = 1000;
