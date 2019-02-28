@@ -77,6 +77,10 @@ const Server = module.exports = function SayghtServer(server, confInput1, confIn
 	// Create trigger for when socket server is set up if it is created internally
 	if (this.socketServer.internal) {
 		this.socketServer.on('listening', this.addTrigger('socketOpen'));
+	}
+
+	// Add websocket server to closable systems to check when everything is closed
+	if (this.socketServer !== this.Client) {
 		this.socketServer.on('close', this.onClosed());
 	}
 
