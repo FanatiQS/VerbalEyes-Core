@@ -57,7 +57,7 @@ const Server = module.exports = function SayghtServer(server, confInput1, confIn
 	// Add callbacks for when 'conf' watcher is closed
 	if (this.conf._watcher) this.conf._watcher.callbacks.push((path) => {
 		log(/@!/, "Stopped waching config file:", /@path/, path);
-	}, this.onClosed());
+	}, this.addOnClosed());
 
 
 
@@ -81,7 +81,7 @@ const Server = module.exports = function SayghtServer(server, confInput1, confIn
 
 	// Add websocket server to closable systems to check when everything is closed
 	if (this.socketServer !== this.Client) {
-		this.socketServer.on('close', this.onClosed());
+		this.socketServer.on('close', this.addOnClosed());
 	}
 
 
@@ -250,11 +250,15 @@ Server.prototype.close = function () {
 };
 
 // Add this to closable systems to check for when everything is closed
-Server.prototype.onClosed = function () {
+Server.prototype.addOnClosed = function () {
 	this.closedCount++;
 	return () => {
+		// Remove it and stop if this was not the last one
 		this.closedCount--;
-		if (!this.closedCount) log(/@!/, "Teleprompter server shut down!");
+		if (this.closedCount) return;
+
+		// Log, everything is shut down
+		log(/@!/, "Sayght-Teleprompter server shut down!");
 	};
 };
 
