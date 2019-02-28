@@ -104,6 +104,7 @@ Custom scripts are javascript files that load the projects and its documents...
 
 ## Server:
 This is what is used for communication between the server and the clients. The argument can be formatted in many different ways.
+
 1. Undefined/false:
 	This will use the port number property in the config object or the default port. It creates a new websocket server.
 2. A number:
@@ -116,7 +117,15 @@ This is what is used for communication between the server and the clients. The a
 	This will be used as is as an argument for creating a new websocket. Check documentation for 'ws' for more details. It creates a new websocket server.
 6. 'custom' as a string:
 	This will return a function to create a new Client and is used to handle all communication outside the teleprompter server.
+
 * An event listener, 'socketOpen', can be added for when a new websocket server is created (applies to 1,2,3,5 only).
+* The 'close' method will close the websocket and if alternative 1 or 2 is used, it will also close the http server. If alternative 3 is used, websocket server will close while the http server will be left open. For alternative 5, see 'ws' documentation. If alternative 4 or 6 is used, the websocket server will not be closed from the 'close' method.
+
+### Notes about alternative 4 and 6:
+* Logs related to creating a new websocket server will not apply.
+* Log message for when websocket server closes will not apply.
+* Event listener 'socketOpen' is never triggered.
+* Adding static files with method 'use' will not work.
 
 
 
