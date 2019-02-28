@@ -21,7 +21,7 @@ ShareDB.types.register(richtext.type);
 // Create a new teleprompter server
 const Server = module.exports = function SayghtServer(server, confInput1, confInput2) {
 	// Log, started server setup
-	log("Teleprompter server started...");
+	log("Sayght-Teleprompter server started...");
 
 	// Create config from file or object
 	this.conf = getConf(confInput1, confInput2, {
@@ -239,8 +239,8 @@ Server.prototype.on = function (event, callback) {
 
 // Close teleprompter server
 Server.prototype.close = function () {
-	// Log, closed server
-	log(/@!/, "Teleprompter server is shutting down...");
+	// Log, closing server
+	log(/@!/, "Sayght-Teleprompter server is shutting down...");
 
 	// Stop watching config file
 	if (this.conf._watcher) this.conf._watcher.close();
