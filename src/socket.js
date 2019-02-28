@@ -10,17 +10,31 @@ const httpStatic = require('./httpStatic');
 
 
 
+// Get value from URL query parameter 'param'
+function getQueryProperty(url, param) {
+	// Get index of question mark and return undefined if not found
+	const qm = url.indexOf('?') + 1;
+	if (!qm) return;
+
+	// Get index of query parameter and return undefined if not found
+	const paramIndex = url.indexOf(param + '=', qm) + 1;
+	if (!paramIndex) return;
+
+	// Set start and end positions for query parameter value
+	const start = paramIndex + param.length
+	const end = Math.max(0, url.indexOf('&', start)) || undefined;
+
+	// Get parameter value and decode URI endocded characters
+	return decodeURIComponent(url.slice(start, end).replace(/\+/g, ' '))
+}
+
 // On new client connection, create new 'Client' object and map to 'ws' events
 function wsAdapter(wss, Client) {
 	return wss.on('connection', (ws, req) => {
-		// Get url query parameter 'name'
-		const start = (req.url.indexOf('name=', req.url.indexOf('?') + 1 || req.url.length) + 1 || req.url.length) + 4;
-		const name = req.url.slice(start, (req.url.indexOf('&', start) + 1 || req.url.length + 1) - 1) || null;
-
 		// Create new client object
 		const client = new Client(
 			req.connection.remoteAddress,
-			name,
+			getQueryProperty(req.url, 'prefix'),
 			{
 				/*!! replace this with just ws when done*/
 				send: ws.send.bind(ws),
@@ -60,6 +74,7 @@ module.exports = function createSocketServer(server, port, Client) {
 	// Return function for custom socket system
 	else if (server === 'custom') {
 		log("Using custom socket server");
+		Client.getQueryProperty = getQueryProperty;
 		return Client;
 	}
 	// Error handling of unsupported 'server' types
