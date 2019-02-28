@@ -19,7 +19,7 @@ ShareDB.types.register(richtext.type);
 
 
 // Create a new teleprompter server
-const Server = module.exports = function SayghtServer(server, confInput1, confInput2) {
+const Server = module.exports = function SayghtTeleprompterServer(server, confInput1, confInput2) {
 	// Log, started server setup
 	log("Sayght-Teleprompter server started...");
 
