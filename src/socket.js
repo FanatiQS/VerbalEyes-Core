@@ -21,11 +21,11 @@ function getQueryProperty(url, param) {
 	if (!paramIndex) return;
 
 	// Set start and end positions for query parameter value
-	const start = paramIndex + param.length
+	const start = paramIndex + param.length;
 	const end = Math.max(0, url.indexOf('&', start)) || undefined;
 
 	// Get parameter value and decode URI endocded characters
-	return decodeURIComponent(url.slice(start, end).replace(/\+/g, ' '))
+	return decodeURIComponent(url.slice(start, end).replace(/\+/g, ' '));
 }
 
 // On new client connection, create new 'Client' object and map to 'ws' events
