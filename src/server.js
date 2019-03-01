@@ -116,7 +116,7 @@ const Server = module.exports = function SayghtTeleprompterServer(server, confIn
 			if (list.length) {
 				let completed = 0;
 				list.forEach((projID) => {
-					this.addProj(projID, null, () => {
+					this.getProj(projID, null, () => {
 						completed ++;
 
 						// Continue when all callbacks are called
@@ -151,7 +151,7 @@ function preloadMsg(list) {
 }
 
 // Set up project in 'library' for 'projID'
-Server.prototype.addProj = function (projID, init, callback) {
+Server.prototype.getProj = function (projID, init, callback) {
 	// Run 'callback' if project already exists
 	if (this.library[projID]) {
 		callback(this.library[projID]);
