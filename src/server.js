@@ -113,14 +113,14 @@ const Server = module.exports = function SayghtTeleprompterServer(server, confIn
 		// Set up project for every 'projID' property in 'list'
 		else if (Array.isArray(list)) {
 			// Add all projects from 'list' to 'library'
-			if (list.length) {
-				let completed = 0;
+			let completed = list.length;
+			if (completed) {
 				list.forEach((projID) => {
 					this.getProj(projID, null, () => {
-						completed ++;
+						completed --;
 
 						// Continue when all callbacks are called
-						if (completed === list.length) {
+						if (completed === 0) {
 							// Log, list of set up projects
 							log(preloadMsg(Object.keys(this.library)));
 
