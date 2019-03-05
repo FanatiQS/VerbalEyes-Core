@@ -173,7 +173,7 @@ Server.prototype.getProj = function (projID, init, callback) {
 					log.err("Custom loader got an error when trying to load proj:", projID).ERROR(err);
 				}
 			}
-			// Create project in 'library' and run 'callback'
+			// Create project in 'library'
 			else if (isObj(settings)) {
 				this.library[projID] = {
 					id: projID,
@@ -184,16 +184,14 @@ Server.prototype.getProj = function (projID, init, callback) {
 						disableSpaceDelimitedActions: true
 					})
 				};
-				callback(this.library[projID]);
-				return;
 			}
 			// Error handling for if 'settings' is not an object or suppressed
 			else if (settings !== null) {
 				log.err("Returned value from 'getProj' needs to be an object:", settings);
 			}
 
-			// Run callback without arguments if project was not created
-			callback();
+			// Run 'callback' with project object or undefined as argument
+			callback(this.library[projID]);
 		});
 	}
 };
