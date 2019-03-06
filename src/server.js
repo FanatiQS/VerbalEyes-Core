@@ -1,20 +1,13 @@
 'use strict';
 
-const ShareDB = require('sharedb');
-const richtext = require('rich-text');
-
 const log = require('./log');
 const isObj = require('./isObj');
 const Client = require('./client');
+const Project = require('./project');
 const getConf = require('./getConf');
 const getLoader = require('./getLoader');
 const httpStatic = require('./httpStatic');
 const socketServer = require('./socket');
-
-
-
-// Register richtext format in ShareDB
-ShareDB.types.register(richtext.type);
 
 
 
@@ -175,15 +168,7 @@ Server.prototype.getProj = function (projID, init, callback) {
 			}
 			// Create project in 'library'
 			else if (isObj(settings)) {
-				this.library[projID] = {
-					id: projID,
-					clients: [],
-					settings: settings,
-					sharedb: new ShareDB({
-						disableDocAction: true,
-						disableSpaceDelimitedActions: true
-					})
-				};
+				this.library[projID] = new Project(projID, settings);
 			}
 			// Error handling for if 'settings' is not an object or suppressed
 			else if (settings !== null) {
