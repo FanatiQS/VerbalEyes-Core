@@ -48,9 +48,9 @@ const Server = module.exports = function SayghtTeleprompterServer(server, confIn
 	this.closedCount = 0;
 
 	// Add callbacks for when 'conf' watcher is closed
-	if (this.conf._watcher) this.conf._watcher.callbacks.push((path) => {
+	if (this.conf._watcher) this.conf._watcher.callbacks.push(this.addOnClosed((path) => {
 		log(/@!/, "Stopped waching config file:", /@path/, path);
-	}, this.addOnClosed());
+	}));
 
 
 
