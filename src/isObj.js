@@ -2,9 +2,5 @@
 
 // Check if argument is an object
 module.exports = function (obj) {
-	return (
-		obj &&
-		typeof obj === 'object' &&
-		!Array.isArray(obj)
-	) ? true : false;
+	return obj && typeof obj === 'object' && !Array.isArray(obj) || false;
 };
