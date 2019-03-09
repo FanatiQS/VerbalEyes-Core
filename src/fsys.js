@@ -118,7 +118,7 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 			// Run callback with file content if 'name' is watched
 			if (callbacks[name]) fs.readFile(path, 'utf-8', (err, content) => {
 				// Run callback unless 'target' was renamed FROM 'path'
-				if (!err || err.code !== 'ENOENT') callbacks[name](err, content);
+				if ((err && err.code) !== 'ENOENT') callbacks[name](err, content);
 			});
 		});
 
