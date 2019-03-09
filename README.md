@@ -129,6 +129,23 @@ This is what is used for communication between the server and the clients. The a
 
 
 
+## Custom 'server' (alternative 6)
+* Create a new client object for new connections
+* Arguments are
+	1. ip address
+	2. name of the connection
+	3. socket functions (requires a 'send' function and optional 'close' function)
+	* THIS ORDER IS SUBJECT TO CHANGE!!
+* The 'Client' function has a 'Client.getQueryProperty' to get a query parameter. Can be used to get 'name' if that is in the search parameters.
+* The returned 'Client' object has event handlers: onmessage, onclose, onerror
+	* onmessage:
+		* Argument is an object or a stringified object. Data for the teleprompter server is contained in the property 'Sayght' so the socket server can be used for traffic other than for the teleprompter server.
+	* onclose:
+		* no arguments.
+		* Run this when socket closes to do cleanup. (else server crashes on new sharedb messages)
+	* onerror:
+		* Argument is an error object / message that will be logged.
+
 
 
 ## ERROR CODES:
@@ -197,3 +214,13 @@ The log system prints to multiple locations.
 * HTML logs can be fetched with the 'get' function
 * New messages can be added easily with the 'subscribe' function. It has the new message in html as the first argument. (To send the html to a web-browser and push new 'subscribed' messages to it, the easiest way is probably to use websockets).
 * The HTML database has a limit of how many messages it saves. Default is 1000 but it can be changed with the 'dbMax' property.
+
+
+
+## Client stuff:
+* The name of a client can be defined in 3 ways. They are checked in this order.
+	1. The 'name' argument has a value to use when the client connects. (For non-custom servers, this will be the URL query 'prefix')
+	2. Does a reverse DNS lookup to find a name.
+	3. Uses the 'ip' as the name if non of the above successfully got a name.
+* Every client also has an ID number. This is used to differentiate multiple connections from a single computer (or routers if open to the internet). Since it is just a rising integer, it can also be used to check how many clients have connected to the server since startup.
+* Incoming messages for the teleprompter system are contained in a property 'Sayght' and other properties are ignored. If 'Sayght' property is not defined, the incoming message will be ignored.
