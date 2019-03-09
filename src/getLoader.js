@@ -77,7 +77,7 @@ function CustomLoader(imported, timerGetter, callback) {
 	// Validate required functions
 	check('getProj');
 
-	// Validate non-required function, if they doesn't exist, return backup function
+	// Validate optional functions, if they doesn't exist, return backup function
 	check('getProjs', () => []);
 
 	// Run 'callback' if successfully loaded 'imported' without errors
