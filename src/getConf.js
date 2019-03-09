@@ -138,7 +138,8 @@ module.exports = function (confInput1, confInput2, observers) {
 			if (conf.propertyIsEnumerable(key)) log.err("Unable to use '" + key + "' from config, property is locked");
 
 			// Update 'confInput2' property if 'conf' has setter middleware
-			const mid = ((Object.getOwnPropertyDescriptor(conf, key) || {}).set || {}).mid;
+			const pd = Object.getOwnPropertyDescriptor(conf, key);
+			const mid = pd && pd.set && pd.set.mid;
 			if (mid) {
 				// Get property descriptor of 'confInput2'
 				const conf2Prop = Object.getOwnPropertyDescriptor(confInput2, key);
