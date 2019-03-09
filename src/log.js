@@ -177,9 +177,7 @@ function termMapper(value, i, arr) {
 	// Add default and custom styles to 'value' if it has custom styles
 	if (styles) {
 		return addTermStyles(
-			termDefaults[type]
-				.concat(styles.map((style) => termMap[style]))
-			, value
+			termDefaults[type].concat(styles.map((style) => termMap[style])), value
 		);
 	}
 
