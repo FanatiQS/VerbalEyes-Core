@@ -73,8 +73,10 @@ const Server = module.exports = function SayghtTeleprompterServer(server, confIn
 	}
 
 	// Add websocket server to closable systems to check when everything is closed
-	if (this.socketServer !== this.Client) {
-		this.socketServer.on('close', this.addOnClosed());
+	if (this.socketServer.on) {
+		this.socketServer.on('close', this.addOnClosed(() => {
+			log(/@!/,"Websocket server closed");
+		}));
 	}
 
 

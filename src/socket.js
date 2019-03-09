@@ -103,9 +103,6 @@ module.exports = function createSocketServer(server, port, Client) {
 		throw err;
 	});
 
-	// Log, websocket server shutting down
-	wss.on('close', () => log(/@!/,"Websocket server closed"));
-
 	// Return 'wss'
 	return wss;
 };
