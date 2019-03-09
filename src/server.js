@@ -233,11 +233,14 @@ Server.prototype.close = function () {
 };
 
 // Add this to closable systems to check for when everything is closed
-Server.prototype.addOnClosed = function () {
-	this.closedCount++;
-	return () => {
+Server.prototype.addOnClosed = function (callback) {
+	this.closedCount ++;
+	return (...args) => {
+		// Run callback for close event
+		if (callback) callback(...args);
+
 		// Remove it and stop if this was not the last one
-		this.closedCount--;
+		this.closedCount --;
 		if (this.closedCount) return;
 
 		// Log, everything is shut down
