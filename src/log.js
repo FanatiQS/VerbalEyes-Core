@@ -50,7 +50,7 @@ function display(args) {
 
 	// Log 'msg' stylized to terminal and unstlylized to file
 	console.log(
-		...prefix.map(prefixTermMapper),
+		...prefix.map((value) => termMapper(value, 0, getMsg(/green b u/, value))),
 		...(tty) ? msg.map(termMapper) : msg
 	);
 	file.log(util.format('%s',...prefix, ...msg));
@@ -58,7 +58,9 @@ function display(args) {
 
 
 	// Get 'msg' stylized for html
-	const html = '<div' + prefix.map(prefixHtmlMapper).join('') + '>' + msg.map(htmlMapper).join(' ') + '</div>';
+	const html = '<div' + (
+		(prefix[0]) ? ' data-prefix="' + prefix[0] + '" </div><span class="prefix">' + prefix[0] + '</span' : ''
+	) + '>' + msg.map(htmlMapper).join(' ') + '</div>';
 
 	// Push 'html' to the database
 	db.push(html);
@@ -71,16 +73,6 @@ function display(args) {
 
 	// Return sorted 'msg'
 	return msg;
-}
-
-// Add terminal styles to 'value'
-function prefixTermMapper(value) {
-	return getMsg(/green b u/, value).map(termMapper).join(' ');
-}
-
-// Embed 'value' in html attributes
-function prefixHtmlMapper(value) {
-	return ' data-prefix="' + value + '" </div><span class="prefix">' + value + '</span';
 }
 
 
