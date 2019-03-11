@@ -278,14 +278,16 @@ log.err = function err() {
 	file.error(util.format('%s', ...msg));
 
 	// Return function to handle error objects
-	return {ERROR};
+	return errOutput;
 };
 
 // Send error objects to error write stream and console
-function ERROR() {
-	file.error(...arguments);
-	console.error(...arguments);
-}
+const errOutput = {
+	ERROR: function () {
+		file.error(...arguments);
+		console.error(...arguments);
+	}
+};
 
 
 
