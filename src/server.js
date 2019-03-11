@@ -116,6 +116,7 @@ const Server = module.exports = function SayghtTeleprompterServer(server, confIn
 			let completed = list.length;
 			if (completed) {
 				list.forEach((projID) => {
+					let async;
 					this.getProj(projID, null, () => {
 						completed --;
 
@@ -124,10 +125,22 @@ const Server = module.exports = function SayghtTeleprompterServer(server, confIn
 							// Log, list of set up projects
 							log(preloadMsg(Object.keys(this.library)));
 
-							// Trigger listeners for preload completion
-							setTimeout(this.triggers.preload, null, this.library);
+							// Create trigger for 'preload' completion
+							const callback = () => {
+								this.triggers.preload(this.library);
+							};
+
+							// Run trigger if async
+							if (async) {
+								callback();
+							}
+							// Add trigger to run when adding first listener
+							else {
+								this.triggers.preload.callback = callback;
+							}
 						}
 					});
+					async = true;
 				});
 				return;
 			}
