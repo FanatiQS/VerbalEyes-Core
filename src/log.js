@@ -48,11 +48,13 @@ function display(args) {
 	// Create prefix array
 	const prefix = (this && this.prefix) ? [this.prefix] : [];
 
-	// Log 'msg' stylized to terminal and unstlylized to file
+	// Log 'msg' stylized to terminal or unstlylized to file
 	console.log(
 		...prefix.map((value) => termMapper(value, 0, getMsg(/green b u/, value))),
 		...(tty) ? msg.map(termMapper) : msg
 	);
+
+	// Log 'msg' undstylized to file
 	file.log(util.format('%s',...prefix, ...msg));
 
 
@@ -66,7 +68,7 @@ function display(args) {
 	db.push(html);
 
 	// Limit size of database
-	if (db.length > (module.exports.dbMax)) db.shift();
+	if (db.length > (exports.dbMax)) db.shift();
 
 	// Supply all listeners with 'html'
 	listeners.forEach((callback) => callback(html));
@@ -257,12 +259,12 @@ const file = new console.Console(
 
 
 // Log arguments and include prefix if 'this' has a 'prefix' property
-const log = function log() {
+exports = function log() {
 	display.call(this, arguments);
 };
 
 // Log arguments as error message to normal places and error file
-log.err = function err() {
+exports.err = function err() {
 	// Display 'msg' on normal places
 	const msg = display.call(this, [/red b u/, 'ERROR:', ...arguments]);
 
@@ -284,12 +286,12 @@ const errOutput = {
 
 
 // Get log functions adding their messages to a buffer
-log.buffer = function () {
+exports.buffer = function buffer() {
 	const buffer = [];
 
 	// Create 'log' and 'err' functions bound to 'buffer'
-	const output = addToBuffer.bind([buffer, log]);
-	output.err = addToBuffer.bind([buffer, log.err]);
+	const output = addToBuffer.bind([buffer, exports]);
+	output.err = addToBuffer.bind([buffer, exports.err]);
 
 	// Create 'flush' function bound to 'buffer'
 	output.flush = bufferFlush.bind(buffer);
@@ -312,9 +314,9 @@ function bufferFlush(self) {
 
 
 // Export log function containing other functions
-module.exports = log;
+module.exports = exports;
 
 // Add HTML getter, listener creator and max HTML messages number
-log.get = () => db.join(' ');
-log.subscribe = (callback) => listeners.push(callback);
-log.dbMax = 1000;
+exports.get = () => db.join(' ');
+exports.subscribe = (callback) => listeners.push(callback);
+exports.dbMax = 1000;
