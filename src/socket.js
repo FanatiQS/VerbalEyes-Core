@@ -44,8 +44,21 @@ function wsAdapter(wss, Client) {
 
 		// Link 'ws' events to client functions
 		ws.on('message', client.onmessage.bind(client));
-		ws.on('error', client.onerror.bind(client));
 		ws.on('close', client.onclose.bind(client));
+
+		// Terminate websocket and log message on error
+		ws.on('error', (err) => {
+			// Terminate websocket
+			ws.close();
+
+			// Log, error message
+			log.err(/red/, "Error creating socket connection for:", /@ip/, client.ip).ERROR(err);
+
+			// Log, error before 'prefix'
+			if (!client.prefix) {
+				client.err("Error in socket connection, closing client");
+			}
+		});
 	});
 }
 
