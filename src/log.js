@@ -61,21 +61,19 @@ function display(args) {
 	const prefix = (this && this.prefix) ? [this.prefix] : [];
 
 	// Write 'msg' stylized for terminal if function is defined
-	if (write.console.log) write.console.log([
+	if (write.console.log) write.console.log(
 		...prefix.map((value) => termMapper(value, 0, getMsg(/green b u/, value))),
 		...msg.map(termMapper)
-	].join(' '));
+	);
 
 	// Get formatted message without styling
 	const clean = [
 		...prefix,
-		...msg.map((value, i, arr) => {
-			return (arr.type[i] === 'object') ? util.inspect(value) : value;
-		})
-	].join(' ');
+		...msg
+	];
 
 	// Write 'msg' undstylized to 'file'
-	write.file.log(clean);
+	write.file.log(...clean);
 
 
 
@@ -101,7 +99,7 @@ function display(args) {
 
 // Sort out expression styles in message arguments
 function getMsg() {
-	let index = 0;
+	let i = 0;
 	const styles = [];
 	const type = [];
 
@@ -109,7 +107,7 @@ function getMsg() {
 	const output = [...arguments].filter((value) => {
 		// Add expressions as strings in array to 'styles'
 		if (value instanceof RegExp) {
-			styles[index] = [].concat(...value.toString()
+			styles[i] = [].concat(...value.toString()
 				.slice(1,-1)
 				.split(' ')
 				.map((elm) => {
@@ -128,10 +126,10 @@ function getMsg() {
 		}
 
 		// Store type of 'value'
-		type[index] = (value === null) ? 'null' : typeof value;
+		type[i] = (value === null) ? 'null' : typeof value;
 
-		// Pass 'value' to 'output' and increment 'index'
-		index ++;
+		// Pass 'value' to 'output' and increment index
+		i ++;
 		return true;
 	});
 
@@ -185,8 +183,8 @@ function termMapper(value, i, arr) {
 	const styles = arr.styles[i];
 	const type = arr.type[i];
 
-	// Format objects with built in styling
-	if (type === 'object') return util.inspect(value, {colors: true});
+	// No styling for objects
+	if (type === 'object') return value;
 
 	// Add default and custom styles to 'value' if it has custom styles
 	if (styles) {
@@ -244,7 +242,7 @@ function htmlMapper(value, i, arr) {
 
 	// Format 'value' of object type
 	if (type === 'object') {
-		value = util.format(value);
+		value = util.inspect(value);
 	}
 	// Add 'style' attribute if not an object type
 	else if (styles) {
@@ -277,7 +275,7 @@ exports.err = function err() {
 	const clean = display.call(this, [/red b u/, 'ERROR:', ...arguments]);
 
 	// Write 'clean' message to error file
-	write.file.error(clean);
+	write.file.error(...clean);
 
 	// Return function to handle error objects
 	return errOutput;
@@ -286,13 +284,8 @@ exports.err = function err() {
 // Send error objects to error file and console
 const errOutput = {
 	ERROR: function () {
-		write.file.error(util.format(...arguments));
-		if (write.console.error) {
-			write.console.error(util.formatWithOptions(
-				{colors: true},
-				...arguments
-			));
-		}
+		write.file.error(...arguments);
+		if (write.console.error) write.console.error(...arguments);
 	}
 };
 
