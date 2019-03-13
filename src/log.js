@@ -38,10 +38,21 @@ const presets = {
 
 
 
-// Boolean for if console leads to a terminal or not
-const tty = process.stdout._type === 'tty';
+// Write functions
+const write = {
+	console: {
+		log: null,
+		error: null
+	},
+	file: {
+		log: null,
+		error: null
+	}
+};
 
-// Display 'msg' in console, in file and add to database
+
+
+// Write 'msg' to console, file and add to html database
 function display(args) {
 	// Sort out messages and styles from 'args'
 	const msg = getMsg(...args);
@@ -49,14 +60,22 @@ function display(args) {
 	// Create prefix array
 	const prefix = (this && this.prefix) ? [this.prefix] : [];
 
-	// Log 'msg' stylized to terminal or unstlylized to file
-	console.log(
+	// Write 'msg' stylized for terminal if function is defined
+	if (write.console.log) write.console.log([
 		...prefix.map((value) => termMapper(value, 0, getMsg(/green b u/, value))),
-		...(tty) ? msg.map(termMapper) : msg
-	);
+		...msg.map(termMapper)
+	].join(' '));
 
-	// Log 'msg' undstylized to file
-	file.log(util.format('%s',...prefix, ...msg));
+	// Get formatted message without styling
+	const clean = [
+		...prefix,
+		...msg.map((value, i, arr) => {
+			return (arr.type[i] === 'object') ? util.inspect(value) : value;
+		})
+	].join(' ');
+
+	// Write 'msg' undstylized to 'file'
+	write.file.log(clean);
 
 
 
@@ -74,8 +93,8 @@ function display(args) {
 	// Supply all listeners with 'html'
 	listeners.forEach((callback) => callback(html));
 
-	// Return sorted 'msg'
-	return msg;
+	// Return 'clean' message
+	return clean;
 }
 
 
@@ -166,8 +185,8 @@ function termMapper(value, i, arr) {
 	const styles = arr.styles[i];
 	const type = arr.type[i];
 
-	// Do not add styles to objects
-	if (type === 'object') return value;
+	// Format objects with built in styling
+	if (type === 'object') return util.inspect(value, {colors: true});
 
 	// Add default and custom styles to 'value' if it has custom styles
 	if (styles) {
@@ -247,18 +266,6 @@ const listeners = [];
 
 
 
-// Make 'logs' directory if it does not exist
-if (!fs.existsSync('logs')) fs.mkdirSync('logs');
-
-// Create log file streams
-const options = {flags: 'a'};
-const file = new console.Console(
-	fs.createWriteStream('logs/log.txt', options),
-	fs.createWriteStream('logs/error.txt', options)
-);
-
-
-
 // Log arguments and include prefix if 'this' has a 'prefix' property
 exports = function log() {
 	display.call(this, arguments);
@@ -266,21 +273,26 @@ exports = function log() {
 
 // Log arguments as error message to normal places and error file
 exports.err = function err() {
-	// Display 'msg' on normal places
-	const msg = display.call(this, [/red b u/, 'ERROR:', ...arguments]);
+	// Display message in normal places
+	const clean = display.call(this, [/red b u/, 'ERROR:', ...arguments]);
 
-	// Send 'msg' to error write stream file
-	file.error(util.format('%s', ...msg));
+	// Write 'clean' message to error file
+	write.file.error(clean);
 
 	// Return function to handle error objects
 	return errOutput;
 };
 
-// Send error objects to error write stream and console
+// Send error objects to error file and console
 const errOutput = {
 	ERROR: function () {
-		file.error(...arguments);
-		console.error(...arguments);
+		write.file.error(util.format(...arguments));
+		if (write.console.error) {
+			write.console.error(util.formatWithOptions(
+				{colors: true},
+				...arguments
+			));
+		}
 	}
 };
 
@@ -324,3 +336,34 @@ module.exports = exports;
 exports.get = () => db.join(' ');
 exports.subscribe = (callback) => listeners.push(callback);
 exports.dbMax = 1000;
+
+
+
+// Make 'logs' directory if it does not exist
+if (!fs.existsSync('logs')) fs.mkdirSync('logs');
+
+// Create log file streams
+const options = {flags: 'a'};
+write.file = new console.Console(
+	fs.createWriteStream('logs/log.txt', options),
+	fs.createWriteStream('logs/error.txt', options)
+);
+
+// Give console stylized messages
+if (process.stdout._type === 'tty') {
+	write.console = console;
+}
+// Give console unstylized messages
+else {
+	const log = write.file.log;
+	write.file.log = function (msg) {
+		log(msg);
+		console.log(msg);
+	};
+
+	const err = write.file.error;
+	write.file.error = function (msg) {
+		err(msg);
+		console.error(msg);
+	}
+}
