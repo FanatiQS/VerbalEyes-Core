@@ -292,7 +292,10 @@ exports.buffer = function buffer() {
 
 	// Create 'log' and 'err' functions bound to 'buffer'
 	const output = addToBuffer.bind([buffer, exports]);
-	output.err = addToBuffer.bind([buffer, exports.err]);
+	output.err = function () {
+		addToBuffer.call([buffer, exports.err], ...arguments);
+		return {ERROR: addToBuffer.bind([buffer, errOutput.ERROR])};
+	};
 
 	// Create 'flush' function bound to 'buffer'
 	output.flush = bufferFlush.bind(buffer);
