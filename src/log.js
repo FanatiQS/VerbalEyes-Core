@@ -335,11 +335,15 @@ exports.dbMax = 1000;
 // Make 'logs' directory if it does not exist
 if (!fs.existsSync('logs')) fs.mkdirSync('logs');
 
+// Create writestream
+function filestream(name) {
+ 	return fs.createWriteStream('logs/' + name + '.txt', {flags: 'a'});
+}
+
 // Create log file streams
-const options = {flags: 'a'};
 write.file = new console.Console(
-	fs.createWriteStream('logs/log.txt', options),
-	fs.createWriteStream('logs/error.txt', options)
+	filestream('log'),
+	filestream('error')
 );
 
 // Give console stylized messages
