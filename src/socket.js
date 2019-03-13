@@ -52,12 +52,7 @@ function wsAdapter(wss, Client) {
 			ws.close();
 
 			// Log, error message
-			log.err(/red/, "Error creating socket connection for:", /@ip/, client.ip).ERROR(err);
-
-			// Log, error before 'prefix'
-			if (!client.prefix) {
-				client.err("Error in socket connection, closing client");
-			}
+			client.err(/red/, "Error in socket connection").ERROR(err);
 		});
 	});
 }
