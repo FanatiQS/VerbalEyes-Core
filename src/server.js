@@ -12,7 +12,7 @@ const socketServer = require('./socket');
 
 
 // Create a new teleprompter server
-const Server = module.exports = function SayghtTeleprompterServer(server, confInput1, confInput2) {
+const Server = module.exports = function ZayghtTeleprompterServer(server, confInput1, confInput2) {
 	// Log, started server setup
 	log("Teleprompter server started...");
 
