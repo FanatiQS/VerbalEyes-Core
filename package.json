@@ -21,8 +21,7 @@
 	"homepage": "https://github.com/FanatiQS/teleprompter-server#readme",
 	"dependencies": {
 		"bcrypt": "^3.0.2",
-		"sharedb": "^1.0.0-beta.8",
-		"rich-text": "^3.1.0",
+		"quill-delta": "^4.2.0",
 		"ws": "^6.1.0"
 	}
 }
