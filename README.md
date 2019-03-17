@@ -64,6 +64,7 @@ These are for properties that a developer doesn't want an administrator to be ab
 
 ### Config properties:
 When some properties are updated, they will do stuff...
+* autoLogin: Is used when no project is specified at client login. Passwords are not checked with autologin. If 'autoLogin' is false, client connecting without a specified project will get an error.
 
 
 
@@ -139,18 +140,17 @@ This is what is used for communication between the server and the clients. The a
 * The 'Client' function has a 'Client.getQueryProperty' to get a query parameter. Can be used to get 'name' if that is in the search parameters.
 * The returned 'Client' object has event handlers: onmessage, onclose, onerror
 	* onmessage:
-		* Argument is an object or a stringified object. Data for the teleprompter server is contained in the property 'Sayght' so the socket server can be used for traffic other than for the teleprompter server.
+		* Argument is an object or a stringified object. Data for the teleprompter server is contained in the property 'Zayght' so the socket server can be used for traffic other than for the teleprompter server.
 	* onclose:
 		* no arguments.
-		* Run this when socket closes to do cleanup. (else server crashes on new sharedb messages)
+		* Run this when socket closes to do cleanup.
 	* onerror:
-		* Argument is an error object / message that will be logged.
+		* Argument is an error object/message that will be logged.
 
 
 
 ## ERROR CODES:
-* 1000:		Data received failed to parse to json.
-* 1001:		Data received from client is not an object.
+* 1000:		Data received failed to parse to json or property 'Zayght' is not an object.
 
 ### Authentication
 * 2000:		Property 'id' in object is false/missing and autologin is disabled.
@@ -168,17 +168,21 @@ This is what is used for communication between the server and the clients. The a
 * A loader can be synchronous or asynchronous.
 * They have a timeout that will only warn if the callback has not been called after a certain amount of time. This time can be changed in the 'config' file with the property 'timeout'.
 * The callback function can only be called once. Calls after the first one will be ignored.
+* If 'null' is returned, the error for wrong type will be suppressed
 
 
 
 ### getProjs(list)
 
 
-### getProj(projID, extra, conf, callback)
+### getProj(projID, init, conf, callback)
 * Argument projID is the id of the project and is a string.
-* Argument extra is an optional value that can be sent from the client if extra data needs to be sent from the client to the getProj loader.
+* Argument init is an optional value that can be sent from the client if extra data needs to be sent from the client to the getProj loader.
 * Argument conf is the config data for the entire server that is loaded at the start.
 * Argument callback is the callback that can be called in asynchronous systems.
+* The response value (second argument in callback or returned value) should be a settings object.
+* Errors can be thrown or the first argument in callback.
+* The settings object can have a property called 'hash' to define the hash to use for authenticating new clients. It has to be a hashed string from 'bcrypt.hash' or 'true'. If it is 'true', a 'hash' will be generated based on the password used.
 
 
 ### Response
