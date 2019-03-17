@@ -86,7 +86,7 @@ const Client = module.exports = function Client(server, addr, name, socket) {
 		this.err("Unable to create new client. Missing 'send' function");
 		this.close();
 		return {};
-	};
+	}
 
 
 
@@ -295,7 +295,7 @@ function authFail(code, message) {
 
 	// Terminate client connection
 	this.close();
-};
+}
 
 // Authenticate client
 function authSuccess(proj, buffer) {
