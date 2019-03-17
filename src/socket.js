@@ -44,7 +44,7 @@ function wsAdapter(wss, Client) {
 
 		// Link 'ws' events to client functions
 		ws.on('message', client.onmessage.bind(client));
-		ws.on('close', client.onclose.bind(client));
+		ws.on('close', client.close.bind(client));
 
 		// Terminate websocket and log message on error
 		ws.on('error', (err) => {
