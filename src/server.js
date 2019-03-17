@@ -50,8 +50,8 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 	// Add callbacks for when 'conf' watcher is closed
 	if (this.conf._watcher) {
 		this.conf._watcher.callbacks.push(this.addOnClosed((path) => {
-		log(/@!/, "Stopped waching config file:", /@path/, path);
-	}));
+			log(/@!/, "Stopped waching config file:", /@path/, path);
+		}));
 	}
 
 
