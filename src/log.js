@@ -53,34 +53,47 @@ const write = {
 
 
 // Write 'msg' to console, file and add to html database
-function display(args) {
+function display(args, error) {
 	// Sort out messages and styles from 'args'
 	const msg = getMsg(...args);
 
-	// Create prefix array
-	const prefix = (this && this.prefix) ? [this.prefix] : [];
+	// Get prefix
+	const prefix = (this && this.prefix) ? this.prefix : null;
 
 	// Write 'msg' stylized for terminal if function is defined
-	if (write.console.log) write.console.log(
-		...prefix.map((value) => termMapper(value, 0, getMsg(/green b u/, value))),
-		...msg.map(termMapper)
-	);
+	if (write.console.log) {
+		write.console.log(
+			((prefix) ? '\x1b[32;1;4m' + prefix + '\x1b[0m ' : '')
+			+ ((error) ? '\x1b[31;1;4m' + error + '\x1b[0m ' : '')
+			+ msg.map(ttyMapper).join('')
+		);
+	}
 
-	// Get formatted message without styling
-	const clean = [
-		...prefix,
-		...msg
-	];
+	// Get message without styling
+	const clean = ((prefix) ? prefix + ' ' : '')
+	+ ((error) ? error + ' ' : '')
+	+ msg.join('');
 
 	// Write 'msg' undstylized to 'file'
-	write.file.log(...clean);
+	write.file.log(clean);
 
 
+
+	// Create attributes and spans for 'prefix' and 'error'
+	let attr = '';
+	let span = '';
+	if (prefix) {
+		attr += ' data-prefix="' + prefix + '"';
+		span += '<span class="prefix">' + prefix + '</span> ';
+	}
+	if (error) {
+		attr += ' class="' + error + '"';
+		span += '<span class="error">' + error + '</span> ';
+	}
 
 	// Get 'msg' stylized for html
-	const html = '<div' + (
-		(prefix[0]) ? ' data-prefix="' + prefix[0] + '" </div><span class="prefix">' + prefix[0] + '</span' : ''
-	) + '>' + msg.map(htmlMapper).join(' ') + '</div>';
+	const html = '<div' + attr + '>'
+	+ span + msg.map(htmlMapper).join('') + '</div>';
 
 	// Push 'html' to the database
 	db.push(html);
@@ -88,7 +101,7 @@ function display(args) {
 	// Limit size of database
 	if (db.length > (exports.dbMax)) db.shift();
 
-	// Supply all listeners with 'html'
+	// Supply all listeners with 'html' update
 	listeners.forEach((callback) => callback(html));
 
 	// Return 'clean' message
@@ -99,50 +112,78 @@ function display(args) {
 
 // Sort out expression styles in message arguments
 function getMsg() {
-	let i = 0;
-	const styles = [];
-	const type = [];
+	const output = [];
+	output.styles = [];
+	output.type = [];
 
 	// Loop over all arguments sorting out expressions
-	const output = [...arguments].filter((value) => {
+	[...arguments].forEach((value) => {
 		// Add expressions as strings in array to 'styles'
 		if (value instanceof RegExp) {
-			styles[i] = [].concat(...value.toString()
+			output.styles[output.length] = [].concat(...value
+				.toString()
 				.slice(1,-1)
 				.split(' ')
-				.map((elm) => {
+				.map((val) => {
 					// Use preset value of 'value' as style
-					if (elm[0] === '@') {
-						return (presets[elm] || '').split(' ');
+					if (val[0] === '@') {
+						return (presets[val] || '').split(' ');
 					}
 
 					// Use 'value' as style
-					return elm;
-				}
-				));
+					return val;
+				})
+			);
 
 			// Filter out expression
 			return;
 		}
 
-		// Store type of 'value'
-		type[i] = (value === null) ? 'null' : typeof value;
+		// Use 'value' unformated
+		if (typeof value === 'string') {
+			output.type[output.length] = 'string';
+			output[output.length] = value;
+		}
+		// Format 'value'
+		else {
+			const inspected = util.inspect(value, {colors: true});
+			const i = inspected.indexOf('\u001b');
+			if (i > 0) output[output.length] = inspected.slice(0, i);
+			stringToArray.call(output, inspected, i);
+		}
 
-		// Pass 'value' to 'output' and increment index
-		i ++;
-		return true;
+		// Separator between arguments
+		output[output.length] = ' ';
 	});
 
 	// Export 'output' with properties
-	output.styles = styles;
-	output.type = type;
 	return output;
 }
 
 
 
+// Split string up and add to array for styling
+function stringToArray(str, start) {
+	// End index for styling
+	const i = str.indexOf('m', start);
+
+	// Abort if end is reached
+	if (i + 1 === str.length) return;
+
+	// Get type ansi code
+	const type = str.slice(start + 2, i);
+	if (type !== '39' && type !== '22') this.type[this.length] = type;
+
+	// Get stylized content
+	const i2 = str.indexOf('\u001b', i);
+	this[this.length] = str.slice(i + 1, (i2 !== -1) ? i2 : str.length);
+
+	// Go to next style
+	if (i2 !== -1) stringToArray.call(this, str, i2);
+}
+
 // Style codes for terminal
-const termMap = {
+const ttyMap = {
 	black: 30,
 	red: 31,
 	green: 32,
@@ -168,38 +209,37 @@ const termMap = {
 	u: 4
 };
 
-// Default styles per type
-const termDefaults = {
+// Type styles for terminal
+const ttyTypes = {
 	number: [33],
 	boolean: [33],
 	null: [1],
 	undefined: [90],
 	function: [36],
-	string: [35]
+	string: [35],
+
+	//!!## this is just a temporary workaround
+	'33': [33],
+	'1': [1],
+	'90': [90],
+	'36': [36],
+	'32': [32],
+	'35': [35]
 };
 
 // Add terminal styles to values
-function termMapper(value, i, arr) {
-	const styles = arr.styles[i];
-	const type = arr.type[i];
+function ttyMapper(value, i, arr) {
+	const ansi = [];
 
-	// No styling for objects
-	if (type === 'object') return value;
+	// Add type styles and custom styles
+	if (arr.type[i]) ansi.push(ttyTypes[arr.type[i]]);
+	if (arr.styles[i]) ansi.push(...arr.styles[i].map((style) => ttyMap[style]));
 
-	// Add default and custom styles to 'value' if it has custom styles
-	if (styles) {
-		return addTermStyles(
-			termDefaults[type].concat(styles.map((style) => termMap[style])), value
-		);
-	}
+	// Add terminal styling to 'value'
+	if (ansi.length) return '\x1b[' + ansi.join(';') + 'm' + value + '\x1b[0m';
 
-	// Add default styles to 'value'
-	return addTermStyles(termDefaults[type], value);
-}
-
-// Add terminal styling to 'value'
-function addTermStyles(styles, value) {
-	return '\x1b[' + styles.join(';') + 'm' + value + '\x1b[0m';
+	// Return only 'value' if it has no styling
+	return value;
 }
 
 
@@ -233,26 +273,22 @@ const htmlMap = {
 
 // Add HTML styles to values
 function htmlMapper(value, i, arr) {
-	const styles = arr.styles[i];
-	const type = arr.type[i];
-	const attr = [];
+	let attr = '';
 
-	// Add 'class' attribute
-	attr.push('class="' + type + '"');
+	// Add 'class' attribute for 'type'
+	if (arr.type[i]) attr += ' class="type-' + arr.type[i] + '"';
 
-	// Format 'value' of object type
-	if (type === 'object') {
-		value = util.inspect(value);
-	}
-	// Add 'style' attribute if not an object type
-	else if (styles) {
-		attr.push('style="' + styles.map((style) => htmlMap[style]).join(';') + '"');
+	// Add 'style' attribute for 'styles'
+	if (arr.styles[i]) {
+		attr += ' style="' + arr.styles[i].map((style) => {
+			return htmlMap[style];
+		}).join(';') + '"';
 	}
 
 	// Return attributes and value in a span
-	if (attr.length) return '<span ' + attr.join(' ') + '>' + value + '</span>';
+	if (attr) return '<span' + attr + '>' + value + '</span>';
 
-	// Return only value if it has no attributes
+	// Return only 'value' if it has no attributes
 	return value;
 }
 
@@ -272,10 +308,10 @@ exports = function log() {
 // Log arguments as error message to normal places and error file
 exports.err = function err() {
 	// Display message in normal places
-	const clean = display.call(this, [/red b u/, 'ERROR:', ...arguments]);
+	const clean = display.call(this, arguments, 'ERROR:');
 
 	// Write 'clean' message to error file
-	write.file.error(...clean);
+	write.file.error(clean);
 
 	// Return function to handle error objects
 	return errOutput;
@@ -284,8 +320,9 @@ exports.err = function err() {
 // Send error objects to error file and console
 const errOutput = {
 	ERROR: function () {
-		write.file.error(...arguments);
-		if (write.console.error) write.console.error(...arguments);
+		const msg = getMsg(...arguments);
+		write.file.error(msg.join(''));
+		if (write.console.error) write.console.error(msg.map(ttyMapper).join(''));
 	}
 };
 
@@ -326,7 +363,7 @@ function bufferFlush(self) {
 module.exports = exports;
 
 // Add HTML getter, listener creator and max HTML messages number
-exports.get = () => db.join(' ');
+exports.get = () => db.join('');
 exports.subscribe = (callback) => listeners.push(callback);
 exports.dbMax = 1000;
 
@@ -347,20 +384,5 @@ write.file = new console.Console(
 );
 
 // Give console stylized messages
-if (process.stdout._type === 'tty') {
-	write.console = console;
-}
-// Give console unstylized messages
-else {
-	const log = write.file.log;
-	write.file.log = function (msg) {
-		log(msg);
-		console.log(msg);
-	};
+if (process.stdout._type === 'tty') write.console = console;
 
-	const err = write.file.error;
-	write.file.error = function (msg) {
-		err(msg);
-		console.error(msg);
-	}
-}
