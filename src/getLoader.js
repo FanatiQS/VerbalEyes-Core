@@ -75,7 +75,7 @@ function CustomLoader(imported, timerGetter, callback) {
 	};
 
 	// Validate required functions
-	check('getProj');
+	check('loadProj');
 
 	// Validate optional functions, if they doesn't exist, return backup function
 	check('getProjs', () => []);

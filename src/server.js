@@ -171,7 +171,7 @@ Server.prototype.getProj = function (projID, init, callback) {
 	}
 	// Add project to 'library' if it doesn't exist
 	else {
-		this.loader.getProj(projID, init, this.conf, (err, settings) => {
+		this.loader.loadProj(projID, init, this.conf, (err, settings) => {
 			if (err) {
 				// Log, 'getProj' callback timed out
 				if (err.code === 'TIMEOUT') {

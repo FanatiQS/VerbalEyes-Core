@@ -44,7 +44,7 @@ exports.getProjs = function test(conf, callback) {
 };
 
 // Load project settings from json file
-exports.getProj  = function (projID, init, conf, callback) {
+exports.loadProj = function (projID, init, conf, callback) {
 	let settings;
 	let dir;
 
