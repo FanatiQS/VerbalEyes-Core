@@ -316,7 +316,7 @@ function authSuccess(proj, buffer) {
 	// Log, client was authenticated
 	this.log("Authenticated to:", proj.id);
 
-	// Call for all buffered messages
+	// Handle all buffered messages
 	buffer.forEach((value) => {
 		this.rx.call(this, value);
 	});
