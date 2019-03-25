@@ -313,11 +313,13 @@ function authSuccess(proj, buffer) {
 	// Update receiver function
 	this.rx = datareceiver;
 
+	// Log, client was authenticated
+	this.log("Authenticated to:", proj.id);
+
 	// Call for all buffered messages
 	buffer.forEach((value) => {
 		this.rx.call(this, value);
 	});
+}
 
-	// Log, client was authenticated
-	this.log("Authenticated to:", proj.id);
 }
