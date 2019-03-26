@@ -42,7 +42,7 @@ function CustomLoader(imported, timerGetter, callback) {
 
 				// Run 'func' with arguments and 'exit' callback for async
 				try {
-					var result = func(...arguments, exit);
+					var result = func.call(this, ...arguments, exit);
 				}
 				// Exit with cought synchronous error
 				catch (err) {
