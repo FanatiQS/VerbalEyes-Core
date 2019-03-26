@@ -104,7 +104,7 @@ const Client = module.exports = function Client(server, addr, name, socket) {
 };
 
 // Receiver function for incoming messages
-Client.prototype.onmessage = function (data) {
+Client.prototype.message = function (data) {
 	try {
 		// Get property 'Zayght' of parsed 'data' or used as is
 		var obj = ((typeof data === 'string') ? JSON.parse(data) : data).Zayght;
