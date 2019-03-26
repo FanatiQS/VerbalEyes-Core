@@ -125,18 +125,15 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 							// Log, list of set up projects
 							log(preloadMsg(Object.keys(this.library)));
 
-							// Create trigger for 'preload' completion
-							const callback = () => {
-								this.triggers.preload(this.library);
-							};
-
 							// Run trigger if async
 							if (async) {
-								callback();
+								this.triggers.preload(this.library);
 							}
-							// Add trigger to run when adding first listener
+							// Save trigger to run when adding first listener
 							else {
-								this.triggers.preload.callback = callback;
+								this.triggers.preload.callback = () => {
+									this.triggers.preload(this.library);
+								};
 							}
 						}
 					});
