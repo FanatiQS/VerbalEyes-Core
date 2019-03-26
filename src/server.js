@@ -188,7 +188,7 @@ Server.prototype.getProj = function (projID, init, callback) {
 			}
 			// Create project in 'library'
 			else if (isObj(settings)) {
-				this.library[projID] = new Project(projID, settings);
+				this.library[projID] = new Project(projID, settings, this.loader);
 			}
 			// Error handling for if 'settings' is not an object or suppressed
 			else if (settings !== null) {
