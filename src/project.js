@@ -1,20 +1,14 @@
 'use strict';
 
-const ShareDB = require('sharedb');
-const richtext = require('rich-text');
+const Delta = require('quill-delta');
 
-// Register richtext format in ShareDB
-ShareDB.types.register(richtext.type);
+const log = require('./log');
 
 
 
 // Create project instance
 const Project = module.exports = function (projID, settings) {
 	this.id = projID;
-	this.clients = [];
 	this.settings = settings;
-	this.sharedb = new ShareDB({
-		disableDocAction: true,
-		disableSpaceDelimitedActions: true
-	})
+	this.docs = {};
 }
