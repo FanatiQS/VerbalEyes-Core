@@ -105,9 +105,9 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 				log.err("List of projects to preload has already been received").ERROR(err);
 				return;
 			}
-			// Log, custom loader got an error
+			// Log, loader got an error
 			else {
-				log.err("Custom loader got an error in 'getProjs' when trying to get projects list").ERROR(err);
+				log.err("Error getting projects list").ERROR(err);
 			}
 		}
 		// Set up project for every 'projID' property in 'list'
@@ -181,9 +181,9 @@ Server.prototype.getProj = function (projID, init, callback) {
 				else if (err.code === 'BLOCKED') {
 					log.err("Settings for '" + projID + "' has already been received").ERROR(err);
 				}
-				// Log, custom loader got an error
+				// Log, loader got an error
 				else {
-					log.err("Custom loader got an error when trying to load proj:", projID).ERROR(err);
+					log.err("Error loading proj:", projID).ERROR(err);
 				}
 			}
 			// Create project in 'library'
