@@ -226,7 +226,7 @@ function auth(obj) {
 	// Get project and authenticate
 	else {
 		// Log, client tries to connect to 'id'
-		this.log('Trying to connect to:', obj.id);//!!
+		this.log('Trying to connect to project:', obj.id);
 
 		// Get project 'id'
 		this.server.getProj(obj.id, obj.init, (proj) => {
@@ -314,7 +314,7 @@ function authSuccess(proj, buffer) {
 	this.rx = datareceiver;
 
 	// Log, client was authenticated
-	this.log("Authenticated to:", proj.id);
+	this.log("Authenticated to project:", proj.id);
 
 	// Handle all buffered messages
 	buffer.forEach((value) => {
