@@ -199,7 +199,7 @@ function auth(obj) {
 				}
 				// Authenticate client to 'autologin'
 				else {
-					authSuccess.call(this, proj);
+					authSuccess.call(this, proj, buffer);
 				}
 			});
 
