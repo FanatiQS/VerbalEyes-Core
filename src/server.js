@@ -173,11 +173,11 @@ Server.prototype.getProj = function (projID, init, callback) {
 	else {
 		this.loader.loadProj(projID, init, this.conf, (err, settings) => {
 			if (err) {
-				// Log, 'getProj' callback timed out
+				// Log, 'loadProj' callback timed out
 				if (err.code === 'TIMEOUT') {
 					log.err("Timed out getting project settings for:", projID).ERROR(err);
 				}
-				// Log, 'getProj' callback has already been called
+				// Log, 'loadProj' callback has already been called
 				else if (err.code === 'BLOCKED') {
 					log.err("Settings for '" + projID + "' has already been received").ERROR(err);
 				}
@@ -192,7 +192,7 @@ Server.prototype.getProj = function (projID, init, callback) {
 			}
 			// Error handling for if 'settings' is not an object or suppressed
 			else if (settings !== null) {
-				log.err("Returned value from 'getProj' needs to be an object:", settings);
+				log.err("Returned value from 'loadProj' needs to be an object:", settings);
 			}
 
 			// Run 'callback' with project object or undefined as argument
