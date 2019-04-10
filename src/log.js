@@ -29,15 +29,6 @@ const util = require('util');
 
 
 
-// Preset styles
-const presets = {
-	'@path': 'u cyan',
-	'@!': 'b u red',
-	'@ip': 'i, yellow'
-};
-
-
-
 // Write functions
 const write = {
 	console: {
@@ -121,7 +112,7 @@ function getMsg() {
 				.map((val) => {
 					// Use preset value of 'value' as style
 					if (val[0] === '@') {
-						return (presets[val] || '').split(' ');
+						return (exports.presets[val] || '').split(' ');
 					}
 
 					// Use 'value' as style
@@ -167,7 +158,7 @@ function stringToArray(str, start) {
 	const i = str.indexOf('m', start);
 
 	// Abort if end is reached
-	if (i + 1 === str.length) return;
+	if (i === str.length - 1) return;
 
 	// Get type ansi code
 	const type = str.slice(start + 2, i);
@@ -180,6 +171,8 @@ function stringToArray(str, start) {
 	// Go to next style
 	if (i2 !== -1) stringToArray.call(this, str, i2);
 }
+
+
 
 // Style codes for terminal
 const ttyMap = {
@@ -356,6 +349,15 @@ function bufferFlush(self) {
 const listeners = [];
 exports.subscribe = function (callback) {
 	listeners.push(callback);
+};
+
+
+
+// Preset styles
+exports.presets = {
+	'@path': 'u cyan',
+	'@!': 'b u red',
+	'@ip': 'i, yellow'
 };
 
 
