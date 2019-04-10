@@ -148,8 +148,13 @@ function getMsg() {
 		else {
 			const inspected = util.inspect(value, {colors: true});
 			const i = inspected.indexOf('\u001b');
-			if (i > 0) output[output.length] = inspected.slice(0, i);
-			stringToArray.call(output, inspected, i);
+			if (i === -1) {
+				output[output.length] = inspected;
+			}
+			else {
+				if (i > 0) output[output.length] = inspected.slice(0, i);
+				stringToArray.call(output, inspected, i);
+			}
 		}
 
 		// Separator between arguments
