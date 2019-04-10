@@ -52,7 +52,7 @@ const write = {
 
 
 
-// Write 'msg' to console, file and add to html database
+// Write 'msg' to console, file and push html update
 function display(args, error) {
 	// Sort out messages and styles from 'args'
 	const msg = getMsg(...args);
@@ -94,12 +94,6 @@ function display(args, error) {
 	// Get 'msg' stylized for html
 	const html = '<div' + attr + '>'
 	+ span + msg.map(htmlMapper).join('') + '</div>';
-
-	// Push 'html' to the database
-	db.push(html);
-
-	// Limit size of database
-	if (db.length > (exports.dbMax)) db.shift();
 
 	// Supply all listeners with 'html' update
 	listeners.forEach((callback) => callback(html));
@@ -299,12 +293,6 @@ function htmlMapper(value, i, arr) {
 
 
 
-// Database for html messages and listeners listening for new html messages
-const db = [];
-const listeners = [];
-
-
-
 // Log arguments and include prefix if 'this' has a 'prefix' property
 exports = function log() {
 	display.call(this, arguments);
@@ -364,13 +352,36 @@ function bufferFlush(self) {
 
 
 
+// Subscribe to new html messages
+const listeners = [];
+exports.subscribe = function (callback) {
+	listeners.push(callback);
+};
+
+
+
 // Export log function containing other functions
 module.exports = exports;
 
-// Add HTML getter, listener creator and max HTML messages number
-exports.get = () => db.join('');
-exports.subscribe = (callback) => listeners.push(callback);
-exports.dbMax = 1000;
+
+
+// Create HTML db and getter with max HTML messages
+exports.createHtmlDB = function (dbMax) {
+	// Database for html messages and listen for new messages to add
+	const db = [];
+	exports.subscribe((msg) => {
+		// Push 'html' to database
+		db.push(html);
+
+		// Limit size of database
+		if (db.length > (dbMax)) db.shift();
+	});
+
+	// Return getter function for DB
+	return function getDB() {
+		db.join('');
+	}
+}
 
 
 
