@@ -96,7 +96,7 @@ module.exports = function (input, timerGetter) {
 				input = path.resolve(input);
 
 				// Log, started trying to get module
-				log("\nGetting custom loader file:", /@path/, input);
+				log("Getting custom loader file:", /@path/, input);
 
 				// Check file extension on 'input' for error
 				fsys.addFileExt(input, '.js');
@@ -109,7 +109,7 @@ module.exports = function (input, timerGetter) {
 			// Get custom loader from 'input' object
 			else if (isObj(input)) {
 				// Log, started trying to get object
-				log("\nGetting custom loader object");
+				log("Getting custom loader object");
 
 				// Check 'input' object
 				return new CustomLoader(input, timerGetter, (list) => {
@@ -144,7 +144,7 @@ module.exports = function (input, timerGetter) {
 	}
 	// Log, no 'loader' property in config
 	else {
-		log("\nSkipping custom loader");
+		log("Skipping custom loader");
 	}
 
 	// Return built-in loader if custom loader was not added

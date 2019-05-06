@@ -110,7 +110,7 @@ function getObj(confInput1) {
 // Get config object, create middlewares and links
 module.exports = function (confInput1, confInput2, observers) {
 	// Log, getting config settings
-	log("\nSetting up config settings...");
+	log("Setting up config settings...");
 
 	// Set 'confInput1' to './config.json' if it is left undefined
 	if (!confInput1) confInput1 = './config.json';

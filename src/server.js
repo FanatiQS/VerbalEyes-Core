@@ -87,7 +87,7 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 
 
 	// Log, preloading projects
-	log("\nPre-loading projects...");
+	log("Pre-loading projects...");
 
 	// Create trigger for when preloading is done
 	this.addTrigger('preload');
