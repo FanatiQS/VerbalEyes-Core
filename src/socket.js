@@ -60,7 +60,7 @@ function wsAdapter(wss, Client) {
 // Set up socket server
 module.exports = function createSocketServer(server, port, Client) {
 	// Log, setting up websocket server
-	log("\nSetting up socket server");
+	log("Setting up socket server");
 
 	// Fix websocket input for undefined
 	if (!server) {
