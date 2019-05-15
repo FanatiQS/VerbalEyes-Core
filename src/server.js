@@ -157,9 +157,6 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 		// Log, no projects preloaded
 		log("Found no projects to pre-load")
 	});
-
-	// Log, blank line
-	log('');
 };
 
 
