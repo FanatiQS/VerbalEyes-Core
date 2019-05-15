@@ -30,9 +30,6 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 	// Get custom- or default loader
 	this.loader = getLoader(this.conf.loader, () => this.conf.timeout);
 
-	// Add client creator with parent server prefilled
-	this.Client = Client.bind(null, this);
-
 	// Uniq incrementing ID for clients
 	this.clients = 0;
 
@@ -159,6 +156,10 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 	});
 };
 
+// Create a new client connected to this server
+Server.prototype.createClient = function () {
+	return new Client(this, ...arguments);
+};
 
 // Set up project in 'library' for 'projID'
 Server.prototype.getProj = function (projID, init, callback) {
