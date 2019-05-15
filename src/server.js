@@ -69,10 +69,6 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 	// Get, or create a new, socket server
 	this.socketServer = socketServer(server, this.conf.port, this.Client);
 
-	// Create trigger for when socket server is set up if it is created internally
-	if (this.socketServer.internal) {
-		this.socketServer.on('listening', this.addTrigger('socketOpen'));
-	}
 
 	// Add websocket server to closable systems to check when everything is closed
 	if (this.socketServer.on) {

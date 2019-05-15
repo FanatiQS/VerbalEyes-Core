@@ -102,6 +102,9 @@ module.exports = function createSocketServer(server) {
 	// Add system to add static files to http server
 	if (wss.options.port) httpStatic.create(wss._server);
 
+	// Create trigger for when 'wss' is set up if it is created internally
+	wss.on('listening', this.addTrigger('socketOpen'));
+
 	// Log, successfully set up socket server
 	wss.on('listening', () => log("Successfully created WebSocket server"));
 
