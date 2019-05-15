@@ -28,12 +28,12 @@ function getQueryProperty(url, param) {
 	return decodeURIComponent(url.slice(start, end).replace(/\+/g, ' '));
 }
 
-// On new client connection, create new 'Client' object and map to 'ws' events
-function wsAdapter(wss, Client) {
+// On new client connection, create 'client' object and connect it to 'ws' events
+function wsAdapter(wss) {
 	return wss.on('connection', (ws, req) => {
 		// Create new client object
-		const client = new Client(
 			req.connection.remoteAddress,
+		const client = this.createClient(
 			getQueryProperty(req.url, 'prefix'),
 			{
 				/*!! replace this with just ws when done*/
@@ -58,13 +58,13 @@ function wsAdapter(wss, Client) {
 }
 
 // Set up socket server
-module.exports = function createSocketServer(server, port, Client) {
+module.exports = function createSocketServer(server) {
 	// Log, setting up websocket server
 	log("Setting up socket server");
 
 	// Fix websocket input for undefined
 	if (!server) {
-		server = {port: port || 1994};
+		server = {port: this.port || 1994};
 	}
 	// Fix websocket input for TCP/IPC server object
 	else if (server instanceof net.Server) {
@@ -77,7 +77,7 @@ module.exports = function createSocketServer(server, port, Client) {
 	// Return 'server' with new websocket connections adapted to 'Client' system
 	else if (server.constructor.name === 'WebSocketServer') {
 		log("Using supplied WebSocket server");
-		return wsAdapter(server, Client);
+		return wsAdapter.call(this, server);
 	}
 	// Return function for custom socket system
 	else if (server === 'custom') {
@@ -93,8 +93,8 @@ module.exports = function createSocketServer(server, port, Client) {
 	// Log, crating new websocket
 	log("Creating new WebSocket server on" + ((server.server) ? ': [Webserver]' : " port: " + server.port));
 
-	// Setup WS server and apply adapter on new client for 'Client'
-	const wss = wsAdapter(new WS.Server(server), Client);
+	// Setup ws server and apply adapter on new client for 'Client'
+	const wss = wsAdapter.call(this, new ws.Server(server));
 
 	// Indicator for if websocket server was created internally or externally
 	wss.internal = true;
