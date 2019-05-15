@@ -203,7 +203,7 @@ Server.prototype.getProj = function (projID, init, callback) {
 Server.prototype.addTrigger = function (event, callback) {
 	// Create trigger function that runs every callback in 'listeners'
 	const trigger = function () {
-		trigger.listeners.forEach((callback) => callback(...arguments));
+		trigger.listeners.forEach((cb) => cb(...arguments));
 	};
 
 	// Add 'callback'
