@@ -2,7 +2,7 @@
 
 const net = require('net');
 
-const WS = require('ws');
+const ws = require('ws');
 
 const log = require('./log');
 const isObj = require('./isObj');
