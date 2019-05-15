@@ -86,6 +86,12 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 
 
 
+	// Skip preloading if loader function is missing
+	if (!this.loader.getProjs) {
+		log("Pre-loading disabled");
+		return;
+	}
+
 	// Log, preloading projects
 	log("Pre-loading projects...");
 

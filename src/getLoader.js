@@ -11,11 +11,9 @@ const isObj = require('./isObj');
 // Create 'Loader' object to receive only valid functions from 'imported'
 function CustomLoader(imported, timerGetter, callback) {
 	// Validate property of 'imported'
-	const check = (prop, backup) => {
-		const func = imported[prop] || backup;
-
-		// If 'func' is a function, add it to 'this'
-		if (typeof func === 'function') {
+	const check = (prop, optional) => {
+		// If linked function is a function, add it to 'this'
+		if (typeof imported[prop] === 'function') {
 			this[prop] = function () {
 				let err;
 
@@ -40,9 +38,9 @@ function CustomLoader(imported, timerGetter, callback) {
 					}
 				};
 
-				// Run 'func' with arguments and 'exit' callback for async
+				// Run linked function with arguments and 'exit' callback for async
 				try {
-					var result = func.call(this, ...arguments, exit);
+					var result = imported[prop].call(this, ...arguments, exit);
 				}
 				// Exit with cought synchronous error
 				catch (err) {
@@ -64,12 +62,12 @@ function CustomLoader(imported, timerGetter, callback) {
 				}
 			};
 		}
-		// Error handling for if 'func' is not a function
-		else if (func) {
-			throw "Property '" + prop + "' in custom script has to be a function: " + func;
+		// Error handling for if linked property is not a function
+		else if (imported[prop]) {
+			throw "Property '" + prop + "' in custom script has to be a function: " + imported[prop];
 		}
-		// Error handling for missing property in 'imported' and there is no 'backup'
-		else {
+		// Error handling for missing property in 'imported' unless it is optional
+		else if (!optional) {
 			throw "Missing property '" + prop + "' in custom script";
 		}
 	};
@@ -79,8 +77,8 @@ function CustomLoader(imported, timerGetter, callback) {
 	check('loadDoc');
 	check('saveDoc');
 
-	// Validate optional functions, if they doesn't exist, return backup function
-	check('getProjs', () => []);
+	// Validate optional functions
+	check('getProjs', true);
 
 	// Run 'callback' if successfully loaded 'imported' without errors
 	callback('\n\t' + Object.keys(this).join('\n\t'));
