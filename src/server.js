@@ -129,7 +129,8 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 						// Continue when all callbacks are called
 						if (completed === 0) {
 							// Log, list of set up projects
-							log(preloadMsg(Object.keys(this.library)));
+							const list = Object.keys(this.library);
+							log((list && list.length) ? "Pre-loaded projects:\n\t" + list.join('\n\t') : "No projects pre-loaded");
 
 							// Run trigger if async
 							if (async) {
@@ -154,17 +155,13 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 		}
 
 		// Log, no projects preloaded
-		log(preloadMsg());
+		log("Found no projects to pre-load")
 	});
 
 	// Log, blank line
 	log('');
 };
 
-// Get message for when preloading is complete
-function preloadMsg(list) {
-	return (list && list.length) ? "Preloaded projects:\n\t" + list.join('\n\t') : "Found no projects to preload";
-}
 
 // Set up project in 'library' for 'projID'
 Server.prototype.getProj = function (projID, init, callback) {
