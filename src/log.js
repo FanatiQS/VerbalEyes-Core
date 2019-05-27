@@ -29,21 +29,7 @@ const util = require('util');
 
 
 
-// Write functions
-const write = {
-	console: {
-		log: null,
-		error: null
-	},
-	file: {
-		log: null,
-		error: null
-	}
-};
-
-
-
-// Write 'msg' to console, file and push html update
+// Write 'msg' to 'tty', 'basic' and push html update
 function display(args, error) {
 	// Sort out messages and styles from 'args'
 	const msg = getMsg(...args);
@@ -52,9 +38,9 @@ function display(args, error) {
 	const prefix = (this && this.prefix) ? this.prefix : null;
 
 	// Write 'msg' stylized for terminal if function is defined
-	if (write.console.log) {
-		write.console.log(
 			((prefix) ? '\x1b[32;1;4m' + prefix + '\x1b[0m ' : '')
+	if (write.tty) {
+		write.tty(
 			+ ((error) ? '\x1b[31;1;4m' + error + '\x1b[0m ' : '')
 			+ msg.map(ttyMapper).join('')
 		);
@@ -291,7 +277,7 @@ exports = function log() {
 	display.call(this, arguments);
 };
 
-// Log arguments as error message to normal places and error file
+// Log arguments as error message to normal places and 'basic' error
 exports.err = function err() {
 	// Display message in normal places
 	const clean = display.call(this, arguments, 'ERROR:');
@@ -303,7 +289,7 @@ exports.err = function err() {
 	return errOutput;
 };
 
-// Send error objects to error file and console
+// Send error objects to 'basic' error and 'tty'
 const errOutput = {
 	ERROR: function () {
 		const msg = getMsg(...arguments);
@@ -387,6 +373,19 @@ exports.createHtmlDB = function (dbMax) {
 
 
 
+// Write functions
+const write = exports.writers = {
+	tty: (process.stdout.isTTY) ? function (msg) {
+		process.stdout.write(msg + '\n');
+	} : null,
+	basic: {
+		log: null,
+		error: null
+	}
+};
+
+
+
 // Make 'logs' directory if it does not exist
 if (!fs.existsSync('logs')) fs.mkdirSync('logs');
 
@@ -401,6 +400,4 @@ write.file = new console.Console(
 	filestream('error')
 );
 
-// Give console stylized messages
-if (process.stdout._type === 'tty') write.console = console;
 
