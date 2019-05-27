@@ -382,13 +382,14 @@ if (!fs.existsSync('logs')) fs.mkdirSync('logs');
 
 // Create writestream
 function filestream(name) {
- 	return fs.createWriteStream('logs/' + name + '.txt', {flags: 'a'});
+ 	const stream = fs.createWriteStream('logs/' + name + '.txt', {flags: 'a'});
+	return (msg) => stream.write(msg + '\n');
 }
 
 // Create log file streams
-write.file = new console.Console(
-	filestream('log'),
-	filestream('error')
-);
+write.basic = {
+	log: filestream('log'),
+	error: filestream('error')
+};
 
 
