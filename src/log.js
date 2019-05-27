@@ -35,22 +35,22 @@ function display(args, error) {
 	const msg = getMsg(...args);
 
 	// Get prefix
-	const prefix = (this && this.prefix) ? this.prefix : null;
+	const prefix = this && this.prefix;
 
 	// Write 'msg' stylized for terminal if function is defined
-			((prefix) ? '\x1b[32;1;4m' + prefix + '\x1b[0m ' : '')
 	if (write.tty) {
 		write.tty(
+			((prefix) ? '\x1b[32;1;4m' + '[#' + prefix + ']:' + '\x1b[0m ' : '')
 			+ ((error) ? '\x1b[31;1;4m' + error + '\x1b[0m ' : '')
 			+ msg.map(ttyMapper).join('')
 		);
 	}
 
-	const clean = ((prefix) ? prefix + ' ' : '')
-	+ ((error) ? error + ' ' : '')
-	+ msg.join('');
 	// Write 'msg' without styling to 'basic' outputs
 	if (write.basic.log || (error && write.basic.error)) {
+		const clean = ((prefix) ? '[#' + prefix + ']: ' : '')
+		+ ((error) ? error + ' ' : '')
+		+ msg.join('');
 
 		if (write.basic.log) write.basic.log(clean);
 		if (error && write.basic.error) write.basic.error(clean);

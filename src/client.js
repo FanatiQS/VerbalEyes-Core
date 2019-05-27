@@ -73,7 +73,7 @@ const Client = module.exports = function Client(server, addr, name, socket) {
 	// Get name or hostname of ip
 	getNameFromIP(this.ip, name, (hostname) => {
 		// Prefix used for log messages is 'id' and 'hostname'
-		this.prefix = '[#' + this.id + ' - ' + hostname + ']:';
+		this.prefix = this.id + ' - ' + hostname;
 
 		// Restore normal log functions and log buffered messages
 		this.log.flush(this);
