@@ -13,15 +13,23 @@ const util = require('util');
 
  * styles				b=bold, i=italic, u=underline
 
- * @ is for presets, what is immidiately after @ is the name of the preset
+ * @ 					is for presets
+ 						what is immidiately after @ is the name of the preset
 
- * log 					logs message to console, logfile and html db
+ * presets				collection of all presets
 
- * err 					logs red "ERROR:" + message to same as 'log' + errfile
+ * log 					logs message to tty, basic.log and html
 
- * ERROR 				property in err return logs arguments to console + errfile
+ * err 					logs red "ERROR:" + message to tty, basic.error and html
 
- * dbMax				is the max number of lines to be stored in the html db. Default is 1000.
+ * ERROR 				property in err return logs arguments to tty, basic.error
+
+ * buffer				buffers log messages to its log/err until flushed
+
+ * subscribe 			subscribe to new html log messages
+
+ * createHtmlDB			returns a function that gets the backlog of all html logs
+ 						and the argument is maximum stored log messages
 
  * if log or err is placed as a property on an object with a 'prefix' property, that will be put in front of the message
 
