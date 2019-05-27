@@ -350,7 +350,7 @@ exports.createHtmlDB = function (dbMax) {
 	const db = [];
 	exports.subscribe((msg) => {
 		// Push 'html' to database
-		db.push(html);
+		db.push(msg);
 
 		// Limit size of database
 		if (db.length > (dbMax)) db.shift();
@@ -358,7 +358,7 @@ exports.createHtmlDB = function (dbMax) {
 
 	// Return getter function for DB
 	return function getDB() {
-		db.join('');
+		return db.join('');
 	}
 }
 
