@@ -46,37 +46,33 @@ function display(args, error) {
 		);
 	}
 
-	// Get message without styling
 	const clean = ((prefix) ? prefix + ' ' : '')
 	+ ((error) ? error + ' ' : '')
 	+ msg.join('');
+	// Write 'msg' without styling to 'basic' outputs
+	if (write.basic.log || (error && write.basic.error)) {
 
-	// Write 'msg' undstylized to 'file'
-	write.file.log(clean);
-
-
-
-	// Create attributes and spans for 'prefix' and 'error'
-	let attr = '';
-	let span = '';
-	if (prefix) {
-		attr += ' data-prefix="' + prefix + '"';
-		span += '<span class="prefix">' + prefix + '</span> ';
+		if (write.basic.log) write.basic.log(clean);
+		if (error && write.basic.error) write.basic.error(clean);
 	}
-	if (error) {
-		attr += ' class="' + error + '"';
-		span += '<span class="error">' + error + '</span> ';
+	// Send update for html if any listeners exist
+	if (listeners.length) {
+		// Create attributes and spans for 'prefix' and 'error'
+		let attr = '';
+		let span = '';
+		if (prefix) {
+			attr += ' data-prefix="' + prefix + '"';
+			span += '<span class="prefix">[#' + prefix + ']:</span> ';
+		}
+		if (error) {
+			attr += ' class="Error"';
+			span += '<span class="error-prefix">' + error + '</span> ';
+		}
+
+		// Supply all listeners with 'msg' stylized for html
+		listeners.forEach((callback) => callback('<div' + attr + '>'
+		+ span + msg.map(htmlMapper).join('') + '</div>'));
 	}
-
-	// Get 'msg' stylized for html
-	const html = '<div' + attr + '>'
-	+ span + msg.map(htmlMapper).join('') + '</div>';
-
-	// Supply all listeners with 'html' update
-	listeners.forEach((callback) => callback(html));
-
-	// Return 'clean' message
-	return clean;
 }
 
 
@@ -135,8 +131,6 @@ function getMsg() {
 	// Export 'output' with properties
 	return output;
 }
-
-
 
 // Split string up and add to array for styling
 function stringToArray(str, start) {
@@ -279,11 +273,8 @@ exports = function log() {
 
 // Log arguments as error message to normal places and 'basic' error
 exports.err = function err() {
-	// Display message in normal places
-	const clean = display.call(this, arguments, 'ERROR:');
-
-	// Write 'clean' message to error file
-	write.file.error(clean);
+	// Display message
+	display.call(this, arguments, 'ERROR:');
 
 	// Return function to handle error objects
 	return errOutput;
@@ -293,8 +284,8 @@ exports.err = function err() {
 const errOutput = {
 	ERROR: function () {
 		const msg = getMsg(...arguments);
-		write.file.error(msg.join(''));
-		if (write.console.error) write.console.error(msg.map(ttyMapper).join(''));
+		if (write.tty) write.tty(msg.map(ttyMapper).join(''));
+		if (write.basic.error) write.basic.error(msg.join(''));
 	}
 };
 
