@@ -333,8 +333,7 @@ exports.subscribe = function (callback) {
 // Preset styles
 exports.presets = {
 	'@path': 'u cyan',
-	'@!': 'b u red',
-	'@ip': 'i, yellow'
+	'@!': 'b u red'
 };
 
 
