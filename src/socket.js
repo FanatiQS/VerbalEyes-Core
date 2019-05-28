@@ -32,14 +32,14 @@ function getQueryProperty(url, param) {
 function wsAdapter(wss) {
 	return wss.on('connection', (ws, req) => {
 		// Create new client object
-			req.connection.remoteAddress,
 		const client = this.createClient(
-			getQueryProperty(req.url, 'prefix'),
 			{
 				/*!! replace this with just ws when done*/
 				send: ws.send.bind(ws),
 				close: ws.close.bind(ws)
-			}
+			},
+			getQueryProperty(req.url, 'prefix'),
+			req.connection.remoteAddress
 		);
 
 		// Link 'ws' events to client functions
