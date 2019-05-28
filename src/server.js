@@ -67,12 +67,11 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 
 
 	// Get, or create a new, socket server
-	this.socketServer = socketServer(server, this.conf.port, this.Client);
+	this.wss = socketServer.call(this, server);
 
-
-	// Add websocket server to closable systems to check when everything is closed
-	if (this.socketServer.on) {
-		this.socketServer.on('close', this.addOnClosed(() => {
+	// Add 'wss' to closable systems to check when everything is closed
+	if (this.wss) {
+		this.wss.on('close', this.addOnClosed(() => {
 			log(/@!/,"Websocket server closed");
 		}));
 	}
@@ -243,7 +242,7 @@ Server.prototype.close = function () {
 	if (this.conf._watcher) this.conf._watcher.close();
 
 	// Close websocket server if it was created internally
-	if (this.socketServer.internal) this.socketServer.close();
+	if (this.wss.internal) this.wss.close();
 };
 
 // Add this to closable systems to check for when everything is closed
