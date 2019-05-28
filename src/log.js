@@ -363,11 +363,14 @@ exports.createHtmlDB = function (dbMax) {
 		if (db.length > (dbMax)) db.shift();
 	});
 
-	// Return getter function for DB
-	return function getDB() {
+	// Get combined backlog of messages
+	db.get = function () {
 		return db.join('');
-	}
-}
+	};
+
+	// Return log DB
+	return db;
+};
 
 
 
@@ -389,7 +392,7 @@ if (!fs.existsSync('logs')) fs.mkdirSync('logs');
 
 // Create writestream
 function filestream(name) {
- 	const stream = fs.createWriteStream('logs/' + name + '.txt', {flags: 'a'});
+	const stream = fs.createWriteStream('logs/' + name + '.txt', {flags: 'a'});
 	return (msg) => stream.write(msg + '\n');
 }
 
