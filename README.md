@@ -1,4 +1,5 @@
 # Teleprompter
+## IT DOES NOT WORK YET!!!!!!!
 This project is very much a work in progress!!!
 The documentation is far from thought trough.
 
