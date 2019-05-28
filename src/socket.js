@@ -81,9 +81,8 @@ module.exports = function createSocketServer(server) {
 	}
 	// Return function for custom socket system
 	else if (server === 'custom') {
-		log("Using custom socket server");
-		Client.getQueryProperty = getQueryProperty;
-		return Client;
+		log("Socket connections are handled manually");
+		return null;
 	}
 	// Error handling of unsupported 'server' types
 	else if (!isObj(server)) {
