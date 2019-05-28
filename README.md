@@ -71,7 +71,7 @@ When some properties are updated, they will do stuff...
 
 
 ## Custom Loaders:
-Custom scripts are javascript files that load the projects and its documents...
+Custom scripts are javascript files or javascript objects that load the projects and its documents...
 
 * A custom loader contains functions to load different types of things.
 * Loader functions can be either synchronous or asynchronous.
@@ -131,21 +131,19 @@ This is what is used for communication between the server and the clients. The a
 
 
 ## Custom 'server' (alternative 6)
-* Create a new client object for new connections
+* Create a new client object for new connections with the 'createClient' function
 * Arguments are
-	1. ip address
-	2. name of the connection
-	3. socket functions (requires a 'send' function and optional 'close' function)
+	1. socket functions (requires a 'send' function and optional 'close' function)
+	2. name of the client
+	3. ip address
 	* THIS ORDER IS SUBJECT TO CHANGE!!
-* The 'Client' function has a 'Client.getQueryProperty' to get a query parameter. Can be used to get 'name' if that is in the search parameters.
-* The returned 'Client' object has event handlers: onmessage, onclose, onerror
-	* onmessage:
+* The returned 'Client' object has event handlers: message, close
+	* message:
 		* Argument is an object or a stringified object. Data for the teleprompter server is contained in the property 'Zayght' so the socket server can be used for traffic other than for the teleprompter server.
-	* onclose:
+	* close:
 		* no arguments.
 		* Run this when socket closes to do cleanup.
-	* onerror:
-		* Argument is an error object/message that will be logged.
+* errors are handled manually
 
 
 
@@ -159,8 +157,7 @@ This is what is used for communication between the server and the clients. The a
 * 2003:		Property 'pwd' does not match stored hash.
 
 * 3000:		Property 'id' in object is not a string.
-* 3001:		Property 'id' in object is a string that is longer than 128 characters.
-* 3002:		Unable to hash password!!!!!
+* 3001:		Unable to hash password!!!!!
 
 
 
@@ -212,12 +209,15 @@ This is what is used for communication between the server and the clients. The a
 
 ### Log
 The log system prints to multiple locations.
-* Logs can be found in the console and the log file
-* Errors can be found in the console, the log file and the error file. In the console and the error file, it might be followed by an error object with more information about the error.
-* Both logs and errors can also be viewed in HTML.
-* HTML logs can be fetched with the 'get' function
+* By default it prints log messages to the console (tty) and two log files, one for logs and one for errors (basic).
+* These can be remapped or removed from the 'write' object in the 'log' code
+* Logs are routed to 'tty' and 'basic.log'
+* Errors are routed to 'tty' and 'basic.log' and 'basic.error'
+* Some error messages also contain an error object for more detailed information that will only show up in 'tty' and 'basic.log'
+* An html db can be created with the 'createHtmlDB' function. It will get all future messages in html style. The argument when creating the DB is the maximum number of logs to store. Default is 1000. After that number is reached, the oldes one is deleted from the database.
+* The DB returned from 'createHtmlDB' has a method called 'get'. This can be used to get all messages in one string, ready to send to the front end.
 * New messages can be added easily with the 'subscribe' function. It has the new message in html as the first argument. (To send the html to a web-browser and push new 'subscribed' messages to it, the easiest way is probably to use websockets).
-* The HTML database has a limit of how many messages it saves. Default is 1000 but it can be changed with the 'dbMax' property.
+* The html logs get all log and error messages, though not the error objects.
 
 
 
