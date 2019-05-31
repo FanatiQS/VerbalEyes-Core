@@ -126,58 +126,61 @@ module.exports = function (confInput1, confInput2, observers) {
 		observer(conf, key, observers[key]);
 	});
 
-	// Add links to all 'confInput2' properties in 'conf'
-	if (isObj(confInput2)) {
-		// Add locked properties
-		const locked = Object.keys(confInput2);
-		locked.forEach((key) => {
-			// Log, error message for if 'conf' already has the property
-			if (conf.propertyIsEnumerable(key)) log.err("Unable to use '" + key + "' from config, property is locked");
+	// Handle locked properties from 'confInput2'
+	if (confInput2) {
+		// Add links to all 'confInput2' properties in 'conf'
+		if (isObj(confInput2)) {
+			// Add locked properties
+			const locked = Object.keys(confInput2);
+			locked.forEach((key) => {
+				// Log, error message for if 'conf' already has the property
+				if (conf.propertyIsEnumerable(key)) log.err("Unable to use '" + key + "' from config, property is locked");
 
-			// Update 'confInput2' property if 'conf' has setter middleware
-			const pd = Object.getOwnPropertyDescriptor(conf, key);
-			const mid = pd && pd.set && pd.set.mid;
-			if (mid) {
-				// Get property descriptor of 'confInput2'
-				const conf2Prop = Object.getOwnPropertyDescriptor(confInput2, key);
+				// Update 'confInput2' property if 'conf' has setter middleware
+				const pd = Object.getOwnPropertyDescriptor(conf, key);
+				const mid = pd && pd.set && pd.set.mid;
+				if (mid) {
+					// Get property descriptor of 'confInput2'
+					const conf2Prop = Object.getOwnPropertyDescriptor(confInput2, key);
 
-				// Create getter/setter if value is used
-				if (conf2Prop.value) {
-					conf2Prop.get = function () {
-						return conf2Prop.value;
-					};
-					conf2Prop.set = function (value) {
-						conf2Prop.value = value;
-					};
+					// Create getter/setter if value is used
+					if (conf2Prop.value) {
+						conf2Prop.get = function () {
+							return conf2Prop.value;
+						};
+						conf2Prop.set = function (value) {
+							conf2Prop.value = value;
+						};
+					}
+
+					// Set up getter/setter on 'confInput2'
+					Object.defineProperty(confInput2, key, {
+						get: conf2Prop.get,
+						set: (!conf2Prop.set) ? undefined : function (value) {
+							mid(value, this[key]);
+							conf2Prop.set(value);
+						}
+					});
 				}
 
-				// Set up getter/setter on 'confInput2'
-				Object.defineProperty(confInput2, key, {
-					get: conf2Prop.get,
-					set: (!conf2Prop.set) ? undefined : function (value) {
-						mid(value, this[key]);
-						conf2Prop.set(value);
-					}
+				// Create link to 'confInput2' property in 'conf'
+				Object.defineProperty(conf, key, {
+					get: function () {
+						return confInput2[key];
+					},
+					set: undefined,
+					enumerable: true,
+					configurable: false
 				});
-			}
-
-			// Create link to 'confInput2' property in 'conf'
-			Object.defineProperty(conf, key, {
-				get: function () {
-					return confInput2[key];
-				},
-				set: undefined,
-				enumerable: true,
-				configurable: false
 			});
-		});
 
-		// Log, locked properties list
-		log((locked.length) ? "Locked properties in config:\n\t" + locked.join('\n\t') : "No locked properties in config");
-	}
-	// Error handling for if 'confInput2' is not an object
-	else if (confInput2) {
-		log.err("Unable to add locked properties from:", confInput2);
+			// Log, locked properties list
+			log((locked.length) ? "Locked properties in config:\n\t" + locked.join('\n\t') : "No locked properties in config");
+		}
+		// Error handling for if 'confInput2' is not an object
+		else {
+			log.err("Unable to add locked properties from:", confInput2);
+		}
 	}
 
 	// Log, finnished setting up config with content of 'conf' unless it is empty
