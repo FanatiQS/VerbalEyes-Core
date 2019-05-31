@@ -95,6 +95,7 @@ function getObj(confInput1) {
 	}
 	// Return input object
 	else if (isObj(confInput1)) {
+		log("Using config object");
 		return confInput1;
 	}
 	// Error handling for unsupported argument types
