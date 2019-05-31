@@ -119,13 +119,11 @@ module.exports = function (confInput1, confInput2, observers) {
 
 	// Set up observer for every property in 'observers' on 'conf' and fire observers callback on change
 	Object.keys(observers).forEach((key) => {
-		const value = observers[key];
-
 		// Error handling for if property is not a function
-		if (typeof value !== 'function') throw Error("Observer callback for '" + key + "' has to be a function: " + value);
+		if (typeof observers[key] !== 'function') throw Error("Observer callback for '" + key + "' has to be a function: " + observers[key]);
 
 		// Add observer to 'conf' property 'key'
-		observer(conf, key, value);
+		observer(conf, key, observers[key]);
 	});
 
 	// Add links to all 'confInput2' properties in 'conf'
