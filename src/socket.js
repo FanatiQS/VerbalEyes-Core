@@ -64,7 +64,7 @@ module.exports = function createSocketServer(server) {
 
 	// Fix websocket input for undefined
 	if (!server) {
-		server = {port: this.port || 1994};
+		server = {port: this.conf.port || 1994};
 	}
 	// Fix websocket input for TCP/IPC server object
 	else if (server instanceof net.Server) {
