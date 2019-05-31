@@ -26,17 +26,10 @@ function getObj(confInput1) {
 		// Clarify path for console messages
 		confInput1 = path.resolve(confInput1);
 
-		// Add file extension if nonexistent
 		try {
+			// Add file extension if nonexistent
 			confInput1 = fsys.addFileExt(confInput1, '.json');
-		}
-		// Log, error message if 'confInput1' has the wrong file extension
-		catch (err) {
-			log.err(err.message);
-			throw err;
-		}
 
-		try {
 			// Get parsed JSON content of config file at path 'confInput1'
 			const config = JSON.parse(fs.readFileSync(confInput1, 'utf-8'));
 
@@ -50,8 +43,13 @@ function getObj(confInput1) {
 			return config;
 		}
 		catch (err) {
+			// Log, error message if 'confInput1' has the wrong file extension
+			if (err.code = 'wrongtype') {
+				log.err(err.message);
+				throw err;
+			}
 			// Create new config file if it was not found
-			if (err.code === 'ENOENT') {
+			else if (err.code === 'ENOENT') {
 				// Log, creating new file, it does not exist
 				log.err("Unable to locate config file. Creating a new one:", /@path/, confInput1);
 
