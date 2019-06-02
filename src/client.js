@@ -82,7 +82,7 @@ const Client = module.exports = function Client(server, socket, name, addr) {
 	// Log error message and terminate client if 'send' is missing
 	if (!socket || !socket.send) {
 		this.err("Unable to create new client. Missing 'send' function");
-		this.close();
+		if (socket.close) socket.close();
 		return {};
 	}
 
