@@ -49,7 +49,7 @@ function getNameFromIP(ip, name, callback) {
 
 
 // Create a 'client' instance
-const Client = module.exports = function Client(server, addr, name, socket) {
+const Client = module.exports = function Client(server, socket, name, addr) {
 	// Make work with or without 'new' operator
 	if (!(this instanceof Client)) return new Client(...arguments);
 
