@@ -10,39 +10,33 @@ const isObj = require('./isObj');
 
 
 // Get name of ip-address
-function getNameFromIP(ip, name, callback) {
-	// Use name if defined
-	if (name) {
-		callback(name);
-	}
-	// Abort if 'ip' is undefined
-	else if (!ip) {
-		callback(null);
-	}
-	// Return 'localhost' for localhost address
-	else if (ip === '::1' || ip.slice(0, 4) === '127.') {
-		callback('localhost');
-	}
-	// Return hostname of reverse DNS lookup if any
-	else {
-		try {
-			dns.reverse(ip, (err, host) => {
-				// Abort if unable to find hostname of 'ip'
-				if (!Array.isArray(host)) {
-					callback(ip);
-					return;
-				}
+function getNameFromIP(addr, callback) {
+	// Get ip of client and convert ipv4 mapped in ipv6 back to ipv4
+	const ip = (addr.match(/\d+\.\d+\.\d+\.\d+/) || [addr])[0];
 
-				// Return hostname of 'ip' without extension
-				const name = host[0];
-				callback(name.slice(0, name.lastIndexOf('.')));
-			});
-		}
-		// Error handling for malformed 'ip' or other dns lookup error
-		catch(err) {
-			log.err("Error looking up client name").ERROR(err);
-			callback(ip);
-		}
+	// Return 'localhost' for localhost address
+	if (ip === '::1' || ip.slice(0, 4) === '127.') {
+		callback('localhost');
+		return;
+	}
+
+	// Return hostname of reverse DNS lookup if any
+	try {
+		dns.reverse(ip, (err, host) => {
+			// Abort if unable to find hostname of 'ip'
+			if (!Array.isArray(host)) {
+				callback(ip);
+				return;
+			}
+
+			// Return hostname of 'ip' without extension
+			callback(host[0].slice(0, host[0].lastIndexOf('.')));
+		});
+	}
+	// Error handling for malformed 'ip' or other dns lookup error
+	catch (err) {
+		log.err("Error looking up client name").ERROR(err);
+		callback(ip);
 	}
 }
 
@@ -59,27 +53,31 @@ const Client = module.exports = function Client(server, socket, name, addr) {
 
 
 
-	// Create buffer for log messages
-	this.log = log.buffer();
-	this.err = this.log.err;
-
 	// Get ID for client
 	server.clients ++;
 	this.id = server.clients;
 
-	// Get ip of client and convert ipv4 mapped in ipv6 back to ipv4
-	this.ip = ((addr || '').match(/\d+\.\d+(\.\d+)*/) || [addr])[0];
+	// Set 'prefix' to 'id' and 'name'
+	if (name || !addr) {
+		this.prefix = this.id + ' - ' + name;
+	}
+	// Set 'prefix' to hostname or IP of 'addr'
+	else {
+		// Create buffer for log messages
+		this.log = log.buffer();
+		this.err = this.log.err;
 
-	// Get name or hostname of ip
-	getNameFromIP(this.ip, name, (hostname) => {
-		// Prefix used for log messages is 'id' and 'hostname'
-		this.prefix = this.id + ' - ' + hostname;
+		// Get hostname or IP of 'addr'
+		getNameFromIP(addr, (hostname) => {
+			// Set 'prefix' to 'id' and 'hostname'
+			this.prefix = this.id + ' - ' + hostname;
 
-		// Restore normal log functions and log buffered messages
-		this.log.flush(this);
-		delete this.log;
-		delete this.err;
-	});
+			// Restore normal log functions and log buffered messages
+			this.log.flush(this);
+			delete this.log;
+			delete this.err;
+		});
+	}
 
 	// Log error message and terminate client if 'send' is missing
 	if (!socket || !socket.send) {
@@ -90,7 +88,7 @@ const Client = module.exports = function Client(server, socket, name, addr) {
 
 
 
-	// Will be populated when authenticated
+	// The project this client is connected to, will be set when authenticated
 	this.proj = null;
 
 	// List of all documents this client is connected to
@@ -100,7 +98,7 @@ const Client = module.exports = function Client(server, socket, name, addr) {
 	this.rx = auth;
 
 	// Log, new client connected
-	this.log("A new client connected to the server from:", /@ip/, this.ip);
+	this.log("A new client connected to the server");
 };
 
 // Receiver function for incoming messages
