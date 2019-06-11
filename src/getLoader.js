@@ -81,7 +81,7 @@ function CustomLoader(imported, timerGetter, callback) {
 	check('getProjs', true);
 
 	// Log, successfully loaded 'imported' without errors
-	log("Successfully added custom loader");
+	log("Successfully validated custom loader");
 }
 
 // Get custom loader functions
@@ -99,11 +99,14 @@ module.exports = function (input, timerGetter) {
 				// Check file extension on 'input' for error
 				fsys.addFileExt(input, '.js');
 
-				// Log, validating module content
-				log("Validating custom loader file:", /@path/, input);
+				// Get custom loader module with absolute path
+				const module = require(input);
 
-				// Get and check module with absolute path
-				return new CustomLoader(require(input), timerGetter);
+				// Log, validating module content
+				log("Validating custom loader module:", /@path/, input);
+
+				// Check module
+				return new CustomLoader(module, timerGetter);
 			}
 			// Get custom loader from 'input' object
 			else if (isObj(input)) {
