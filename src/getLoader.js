@@ -9,7 +9,7 @@ const isObj = require('./isObj');
 
 
 // Create 'Loader' object to receive only valid functions from 'imported'
-function CustomLoader(imported, timerGetter, callback) {
+function CustomLoader(imported, timerGetter) {
 	// Validate property of 'imported'
 	const check = (prop, optional) => {
 		// If linked function is a function, add it to 'this'
