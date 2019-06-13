@@ -12,7 +12,7 @@ const socketServer = require('./socket');
 
 
 // Create a new teleprompter server
-const Server = module.exports = function ZayghtTeleprompterServer(server, confInput1, confInput2) {
+const Server = module.exports = function TeleprompterServer(server, confInput1, confInput2) {
 	// Make work with or without 'new' operator
 	if (!(this instanceof Server)) return new Server(...arguments);
 
