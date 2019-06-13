@@ -139,6 +139,19 @@ Client.prototype.message = function (data) {
 		// Run 'rx' with 'obj._core'
 		this.rx.call(this, obj._core);
 	}
+	// Relay received data to all clients connected to the same project
+	else if (obj.relay) {
+		// Error handling for if this client is not authenticated to a project
+		if (!this.proj) {
+			this.err("Unable to relay data before being authenticated");
+			return;
+		}
+
+		// Broadcast data to all clients connected to the same project
+		this.proj.clients.forEach((client) => {
+			if (this !== client) client.tx(obj);
+		});
+	}
 };
 
 // Transmitt data to client
