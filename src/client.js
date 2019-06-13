@@ -2,9 +2,8 @@
 
 const dns = require('dns');
 
-const bcrypt = require('bcrypt');
-
 const log = require('./log');
+const kdf = require('./kdf');
 const isObj = require('./isObj');
 
 
@@ -103,39 +102,50 @@ const Client = module.exports = function Client(server, socket, name, addr) {
 
 // Receiver function for incoming messages
 Client.prototype.message = function (data) {
+	// Get object by parsing incoming 'data' if it is a string
 	try {
-		// Get property 'Zayght' of parsed 'data' or used as is
-		var obj = ((typeof data === 'string') ? JSON.parse(data) : data).Zayght;
-
-		// Abort if property 'Zayght' is undefined/false
-		if (!obj) return;
-
-		// Throw error if 'obj' is not an object
-		if (!isObj(obj)) throw TypeError("Property 'Zayght' needs to be an object: " + obj);
+		var obj = (typeof data === 'string') ? JSON.parse(data) : data;
 	}
-	// Log and send error to client if unable to get 'Zayght' object
+	// Log and send error to client if parsing failed
 	catch (err) {
-		const msg = "Error handling incoming data object: " + data;
-		this.err(msg).ERROR(err);
+		this.err("Error parsing incoming data").ERROR(err);
 		this.tx({
 			err: {
 				code: 1000,
-				message: msg,
-				error: err.stack
+				message: "Error parsing incoming data",
+				data: data,
+				error: err.message
 			}
 		});
 		return;
 	}
 
-	// Run 'rx' with 'obj'
-	this.rx.call(this, obj);
+	// Handle 'core'
+	if (obj._core) {
+		// Log and send error to client if '_core' is not an object
+		if (!isObj(obj._core)) {
+			const msg = "Property '_core' needs to be an object: " + typeof obj._core;
+			this.err(msg);
+			this.tx({
+				err: {
+					code: 1001,
+					message: msg,
+					data: obj._core
+				}
+			});
+			return;
+		}
+
+		// Run 'rx' with 'obj._core'
+		this.rx.call(this, obj._core);
+	}
 };
 
 // Transmitt data to client
 Client.prototype.tx = function (obj) {
 	// Send object stringified to client
 	try {
-		this.socket.send(JSON.stringify({Zayght: obj}));
+		this.socket.send(JSON.stringify({_core: obj}));
 	}
 	// Error handling for if sending data or stringifying failed
 	catch (err) {
@@ -171,10 +181,8 @@ function auth(obj) {
 
 	// Use 'autologin' if property 'id' is false
 	if (!obj.id) {
-		const autoLogin = this.server.conf.autoLogin;
-
 		// Error handling for if 'autologin' is disabled
-		if (!autoLogin) {
+		if (!this.server.conf.autoLogin) {
 			authFail.call(
 				this,
 				2000,
@@ -182,28 +190,28 @@ function auth(obj) {
 			);
 			return;
 		}
-		else {
-			// Get project 'autologin'
-			this.server.getProj(autoLogin, null, (proj) => {
-				this.log("Using automatic login to project:", autoLogin);
 
-				// Error handling for if loading project 'autologin' failed
-				if (!proj) {
-					authFail.call(
-						this,
-						2001,
-						"Unalbe to load project: " + autoLogin
-					);
-				}
-				// Authenticate client to 'autologin'
-				else {
-					authSuccess.call(this, proj, buffer);
-				}
-			});
+		// Get project 'autologin'
+		this.server.getProj(this.server.conf.autoLogin, null, (proj) => {
+			this.log("Using automatic login to project:", this.server.conf.autoLogin);
 
-			// Add client to 'librarySlaves' list
-			this.server.librarySlaves.push(this);
-		}
+			// Error handling for if loading project 'autologin' failed
+			if (!proj) {
+				authFail.call(
+					this,
+					2001,
+					"Unalbe to load project: " + this.server.conf.autoLogin
+				);
+				return;
+			}
+
+			// Authenticate client to 'autologin'
+			authSuccess.call(this, proj, buffer);
+		});
+
+		// Add client to 'autoLogins' list
+		this.server.autoLogins.push(this);
+		return;
 	}
 	// Error handling for if 'id' is not a string
 	else if (typeof obj.id !== 'string') {
@@ -212,6 +220,7 @@ function auth(obj) {
 			3000,
 			"Project ID needs to be a string: " + obj.id
 		);
+		return;
 	}
 	// Error handling for if 'id' is longer than 128 characters
 	else if (obj.id.length > 128) {
@@ -221,69 +230,90 @@ function auth(obj) {
 			"Unable to connect to project with ID longer than 128 characters"
 		);
 	}
-	// Get project and authenticate
-	else {
-		// Log, client tries to connect to 'id'
-		this.log('Trying to connect to project:', obj.id);
 
-		// Get project 'id'
-		this.server.getProj(obj.id, obj.init, (proj) => {
-			// Error handling for if loading project 'id' failed
-			if (!proj) {
-				authFail.call(
-					this,
-					2001,
-					"Unable to load project: " + obj.id
-				);
-			}
-			// Generate hash if 'hash' property in 'settings' is 'true'
-			else if (proj.settings.hash === true) {
-				bcrypt.hash(obj.pwd, 10, (err, hash) => {
-					// Update to new hash and authenticate client
-					if (!hash) {
-						this.err("Error hashing pwd").ERROR(err);
-						authFail.call(this, 3002, "Unable to hash password");
-					}
-					// Error handling if hashing 'pwd' failed
-					else {
-						proj.settings.hash = hash;
-						authSuccess.call(this, proj, buffer);
-					}
-				});
-			}
-			// Compare 'pwd' and 'hash'
-			else if (proj.settings.hash) {
-				// Error handling for if 'pwd' is not specified
-				if (!obj.pwd) {
-					authFail.call(this, 2002, "A password is required");
+	// Log, client tries to connect to 'id'
+	this.log('Trying to connect to project:', obj.id);
+
+	// Get project 'id'
+	this.server.getProj(obj.id, obj.init, (proj) => {
+		// Error handling for if loading project 'id' failed
+		if (!proj) {
+			authFail.call(
+				this,
+				2001,
+				"Unable to load project: " + obj.id
+			);
+		}
+		// Generate hash if 'hash' property in 'settings' is 'true'
+		else if (proj.settings.hash === true) {
+			kdf.hash(obj.pwd, 10, (err, hash) => {
+				// Error handling if hashing 'pwd' failed
+				if (!hash) {
+					this.err("Error hashing pwd").ERROR(err);
+					authFail.call(
+						this,
+						3001,
+						"Internal error"
+					);
 					return;
 				}
 
-				// Compare 'pwd' with stored 'hash'
-				bcrypt.compare(obj.pwd, proj.settings.hash, (err, res) => {
-					// Error handling for if 'pwd' does not match 'hash'
-					if (!res) {
-						if (err) this.err("Error comparing pwd with hash").ERROR(err);
-						authFail.call(this, 2003, "Password was incorrect");
+				// Update to new hash and authenticate client
+				proj.settings.hash = hash;
+				authSuccess.call(this, proj, buffer);
+			});
+		}
+		// Compare 'pwd' and 'hash'
+		else if (proj.settings.hash) {
+			// Error handling for if 'pwd' is not specified
+			if (!obj.pwd) {
+				authFail.call(
+					this,
+					2002,
+					"A password is required"
+				);
+				return;
+			}
+
+			// Compare 'pwd' with stored 'hash'
+			kdf.verify(obj.pwd, proj.settings.hash, (err, res) => {
+				// Error handling for if 'pwd' does not match 'hash'
+				if (!res) {
+					// Error handling for if 'compare' got an error
+					if (err) {
+						this.err("Error comparing pwd with hash").ERROR(err);
+						authFail.call(
+							this,
+							3001,
+							"Internal error"
+						);
 						return;
 					}
 
-					// Authenticate client if 'pwd' maches 'hash'
-					authSuccess.call(this, proj, buffer);
-				});
-			}
-			// Authenticate client if project has no 'hash'
-			else {
+					// Error handling for if 'pwd' did not match
+					authFail.call(
+						this,
+						2003,
+						"Password was incorrect"
+					);
+					return;
+				}
+
+				// Authenticate client if 'pwd' maches 'hash'
 				authSuccess.call(this, proj, buffer);
-			}
-		});
-	}
+			});
+		}
+		// Authenticate client if project has no 'hash'
+		else {
+			authSuccess.call(this, proj, buffer);
+		}
+	});
 }
 
 // Authentication failed
 function authFail(code, message) {
 	// Log and send error to client
-	this.err(message);
+	this.err("Authentication failed:", message);
 	this.tx({
 		authErr: {
 			code,
@@ -299,6 +329,9 @@ function authFail(code, message) {
 function authSuccess(proj, buffer) {
 	// Add 'proj' to client
 	this.proj = proj;
+
+	// Add client to list of clients in 'proj'
+	this.proj.clients.push(this);
 
 	// Send authentication confirmation to client
 	this.tx({
