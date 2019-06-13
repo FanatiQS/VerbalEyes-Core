@@ -37,7 +37,7 @@ const Server = module.exports = function ZayghtTeleprompterServer(server, confIn
 	this.library = {};
 
 	// List of clients connected using 'autologin'
-	this.librarySlaves = [];
+	this.autoLogins = [];
 
 
 
