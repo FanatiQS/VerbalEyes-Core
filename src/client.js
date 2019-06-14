@@ -168,8 +168,8 @@ Client.prototype.tx = function (obj) {
 
 // Cleanup and log message when socket closes
 Client.prototype.close = function () {
-	// Remove from 'librarySlaves'
-	this.server.librarySlaves.splice(this.server.librarySlaves.indexOf(this), 1);
+	// Remove from 'autoLogins'
+	this.server.autoLogins.splice(this.server.autoLogins.indexOf(this));
 
 	// Disconnect from all documents
 	this.docs.forEach((doc) => {
