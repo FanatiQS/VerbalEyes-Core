@@ -24,7 +24,7 @@ const Server = module.exports = function TeleprompterServer(server, confInput1, 
 		// When 'autoLogin' property in 'conf' changes, send autoreload message to all clients that is using 'autologin'
 		autoLogin: (value) => {
 			log("Updating all clients using autoLogin to new ID:", value);
-			this.librarySlaves.forEach((client) => {
+			this.autoLogins.forEach((client) => {
 				client.tx({autoReload: value});
 			});
 		}
