@@ -100,13 +100,13 @@ module.exports = function (input, timerGetter) {
 				fsys.addFileExt(input, '.js');
 
 				// Get custom loader module with absolute path
-				const module = require(input);
+				const loader = require(input);
 
 				// Log, validating module content
 				log("Validating custom loader module:", /@path/, input);
 
-				// Check module
-				return new CustomLoader(module, timerGetter);
+				// Check loader
+				return new CustomLoader(loader, timerGetter);
 			}
 			// Get custom loader from 'input' object
 			else if (isObj(input)) {
@@ -125,13 +125,13 @@ module.exports = function (input, timerGetter) {
 			if (err.code === 'MODULE_NOT_FOUND') {
 				log.err("Unable to get custom loader module, file not found:", /@path/, input).ERROR(err);
 			}
-			// Error handling for if 'input' has the wrong file extension
-			else if (err.code === 'wrongtype') {
-				log.err("Unable to use 'loader'. File extension needs to be blank or of javascript '.js' format:", /@path/, input).ERROR(err);
-			}
 			// Error handling for if any 'checks' fail
 			else if (typeof err === 'string') {
 				log.err(err);
+			}
+			// Error handling for if 'input' has the wrong file extension
+			else if (err.code === 'wrongtype') {
+				log.err("Unable to use 'loader'. File extension needs to be blank or of javascript '.js' format:", /@path/, input).ERROR(err);
 			}
 			// Error handling for other errors
 			else {
