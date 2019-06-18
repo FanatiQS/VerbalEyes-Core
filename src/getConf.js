@@ -20,44 +20,36 @@ function watchConf(confInput, config) {
 }
 
 // Get config data
-function getObj(confInput1) {
+function getObj(confInput) {
 	// Get config settings and get 'watcher' for 'config' file
-	if (typeof confInput1 === 'string') {
-		// Clarify path for console messages
-		confInput1 = path.resolve(confInput1);
-
+	if (typeof confInput === 'string') {
 		try {
 			// Add file extension if nonexistent
-			confInput1 = fsys.addFileExt(confInput1, '.json');
+			confInput = fsys.addFileExt(path.resolve(confInput), '.json');
 
-			// Get parsed JSON content of config file at path 'confInput1'
-			const config = JSON.parse(fs.readFileSync(confInput1, 'utf-8'));
+			// Get parsed JSON content of config file at path 'confInput'
+			const config = JSON.parse(fs.readFileSync(confInput));
 
 			// Log, completed config setup
-			log("Successfully read config file:", /@path/, confInput1);
+			log("Successfully read config file:", /@path/, confInput);
 
 			// Watch 'config'
-			watchConf(confInput1, config);
+			watchConf(confInput, config);
 
 			// Return config object
 			return config;
 		}
 		catch (err) {
-			// Log, error message if 'confInput1' has the wrong file extension
-			if (err.code = 'wrongtype') {
-				log.err(err.message);
-				throw err;
-			}
 			// Create new config file if it was not found
-			else if (err.code === 'ENOENT') {
+			if (err.code === 'ENOENT') {
 				// Log, creating new file, it does not exist
-				log.err("Unable to locate config file. Creating a new one:", /@path/, confInput1);
+				log.err("Unable to locate config file. Creating a new one:", /@path/, confInput);
 
 				// Create new config object
 				const config = {_createFileCallback: null};
 
 				// Create a new file and entire path asynchronously
-				fsys.createFile(confInput1, '{\n\t\n}', (err) => {
+				fsys.createFile(confInput, '{\n\t\n}', (err) => {
 					// Get '_createFileCallback' callback function
 					const callback = config._createFileCallback;
 
@@ -66,41 +58,46 @@ function getObj(confInput1) {
 
 					// Fire 'callback' if it exists and return
 					if (callback) {
-						callback(err, config, confInput1);
+						callback(err, config, confInput);
 						if (err) return;
 					}
 
 					// Log and throw error if no error catcher function exists
 					if (err) {
-						log.err("Failed to create config file at:", /@path/, confInput1);
+						log.err("Failed to create config file at:", /@path/, confInput);
 						throw err;
 					}
 
 					// Log, created new file
-					log("Created new config file at:", /@path/, confInput1);
+					log("Created new config file at:", /@path/, confInput);
 
 					// Watch 'config'
-					watchConf(confInput1, config);
+					watchConf(confInput, config);
 				});
 
 				// Return config object
 				return config;
 			}
+			// Log, error message if 'confInput' has the wrong file extension
+			else if (err.code = 'wrongtype') {
+				log.err(err.message);
+				throw err;
+			}
 			// Error handling for errors other than if file is not found
 			else {
-				log.err((err.message.match(/JSON/)) ? "Error parsing config file:" : "Error getting config file:", confInput1);
+				log.err((err.message.match(/JSON/)) ? "Error parsing config file:" : "Error getting config file:", confInput);
 				throw err;
 			}
 		}
 	}
 	// Return input object
-	else if (isObj(confInput1)) {
+	else if (isObj(confInput)) {
 		log("Using config object");
-		return confInput1;
+		return confInput;
 	}
 	// Error handling for unsupported argument types
 	else {
-		const err = TypeError("Unable to setup config, 'confInput1' needs to be an object or a string path to a JSON file");
+		const err = TypeError("Unable to setup config, 'confInput1' needs to be an object or a path to a JSON file");
 		log.err(err.message);
 		throw err;
 	}
