@@ -28,28 +28,23 @@ module.exports.addFileExt = function (path, type) {
 
 // Create a file and its entire path containing 'content'
 module.exports.createFile = function (path, content, callback) {
-	prepLoop((callback) => {
-		fs.writeFile(path, content, callback);
-	}, callback);
+	loop([callback, (next) => {
+		fs.writeFile(path, content, next);
+	}], 1);
 };
 
 // Create directory and its entire path
 module.exports.createDir = function (path, callback) {
-	prepLoop((callback) => {
-		fs.mkdir(path, callback);
-	}, callback);
+	loop([callback, (next) => {
+		fs.mkdir(path, next);
+	}], 1);
 };
-
-// Create setup for 'loop' function
-function prepLoop(action, callback) {
-	loop([callback, action], 1);
-}
 
 // Create entire path for function in 'callbacks'
 function loop(callbacks, i) {
 	callbacks[i]((err) => {
 		// If previous action was successfull
-		if (!err) {
+		if (!err || err.code === 'EEXIST') {
 			// Decreace index
 			i--;
 
@@ -91,7 +86,7 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 	// Create new watcher if one does not exist for the parent already
 	if (!watchers[parent]) {
 		// Create watcher
-		watchers[parent] = fs.watch(parent, (type, name) => {
+		watchers[parent] = fs.watch(parent, function (type, name) {
 			console.log('im in fsys checking for watched files', name);//!!
 			/*//!!## problems whith multiple calls on single change
 			//!!
@@ -113,12 +108,13 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 				watchers[parent].callbacks.cooldown = false;
 			}, 4000);
 			console.log(this.callbacks.cooldown);*/
-			//!!## 'this' does not work anymore since I changed it to an arrow function
 
 			// Run callback with file content if 'name' is watched
-			if (callbacks[name]) fs.readFile(path, 'utf-8', (err, content) => {
+			if (this.callbacks[name]) fs.readFile(path, 'utf8', (err, content) => {
 				// Run callback unless 'target' was renamed FROM 'path'
-				if ((err && err.code) !== 'ENOENT') callbacks[name](err, content);
+				if ((err && err.code) !== 'ENOENT') {
+					this.callbacks[name](err, content);
+				}
 			});
 		});
 
@@ -126,11 +122,8 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 		watchers[parent].callbacks = {};
 	}
 
-	// Get callbacks object
-	const callbacks = watchers[parent].callbacks;
-
 	// Add callback to watcher
-	callbacks[target] = callback;
+	watchers[parent].callbacks[target] = callback;
 
 	// Return path and function to stop watching target
 	return {
@@ -138,10 +131,10 @@ const watchFile = module.exports.watchFile = function (path, callback) {
 		callbacks: [],
 		close: function () {
 			// Delete callback for target
-			delete callbacks[target];
+			delete watchers[parent].callbacks[target];
 
 			// Close and remove watcher if no targets are being watched anymore
-			if (!Object.keys(callbacks).length) {
+			if (!Object.keys(watchers[parent].callbacks).length) {
 				watchers[parent].close();
 				delete watchers[parent];
 			}
