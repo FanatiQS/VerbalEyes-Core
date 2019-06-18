@@ -171,6 +171,7 @@ module.exports = function (confInput1, confInput2, observers) {
 		// Error handling for if 'confInput2' is not an object
 		else {
 			log.err("Unable to add locked properties from:", confInput2);
+			throw TypeError("'confInput2' needs to be an object");
 		}
 	}
 
