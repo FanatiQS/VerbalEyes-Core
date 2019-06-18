@@ -134,28 +134,28 @@ module.exports = function (confInput1, confInput2, observers) {
 				if (conf.propertyIsEnumerable(key)) log.err("Unable to use '" + key + "' from config, property is locked");
 
 				// Update 'confInput2' property if 'conf' has setter middleware
-				const pd = Object.getOwnPropertyDescriptor(conf, key);
-				const mid = pd && pd.set && pd.set.mid;
+				const descriptor = Object.getOwnPropertyDescriptor(conf, key);
+				const mid = descriptor && descriptor.set && descriptor.set.mid;
 				if (mid) {
 					// Get property descriptor of 'confInput2'
-					const conf2Prop = Object.getOwnPropertyDescriptor(confInput2, key);
+					const conf2Desc = Object.getOwnPropertyDescriptor(confInput2, key);
 
 					// Create getter/setter if value is used
-					if (conf2Prop.value) {
-						conf2Prop.get = function () {
-							return conf2Prop.value;
+					if (conf2Desc.value) {
+						conf2Desc.get = function () {
+							return conf2Desc.value;
 						};
-						conf2Prop.set = function (value) {
-							conf2Prop.value = value;
+						conf2Desc.set = function (value) {
+							conf2Desc.value = value;
 						};
 					}
 
 					// Set up getter/setter on 'confInput2'
 					Object.defineProperty(confInput2, key, {
-						get: conf2Prop.get,
-						set: (!conf2Prop.set) ? undefined : function (value) {
+						get: conf2Desc.get,
+						set: (!conf2Desc.set) ? undefined : function (value) {
 							mid(value, this[key]);
-							conf2Prop.set(value);
+							conf2Desc.set(value);
 						}
 					});
 				}
