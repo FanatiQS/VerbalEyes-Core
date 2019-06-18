@@ -43,7 +43,7 @@ module.exports.createDir = function (path, callback) {
 // Create entire path for function in 'callbacks'
 function loop(callbacks, i) {
 	callbacks[i]((err) => {
-		// If previous action was successfull
+		// If previous action was successfull or if it exists for another reason
 		if (!err || err.code === 'EEXIST') {
 			// Decreace index
 			i--;
