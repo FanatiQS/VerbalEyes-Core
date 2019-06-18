@@ -217,22 +217,20 @@ Server.prototype.addTrigger = function (event, callback) {
 
 // Create event listener
 Server.prototype.on = function (event, callback) {
-	const trigger = this.triggers[event];
-
 	// Error handling for malformed arguments
 	if (typeof event !== 'string') throw TypeError("Event needs to be a string: " + event);
 	if (typeof callback !== 'function') throw TypeError("Callback needs to be a function: " + callback);
 
 	// Abort if 'event' is not valid
-	if (!trigger) return;
+	if (!this.triggers[event]) return;
 
 	// Add callback to 'listeners' for 'event'
-	trigger.listeners.push(callback);
+	this.triggers[event].listeners.push(callback);
 
 	// Run 'callback' when first listener is added
-	if (trigger.callback) {
-		trigger.callback(trigger);
-		trigger.callback = null;
+	if (this.triggers[event].callback) {
+		this.triggers[event].callback(this.triggers[event]);
+		this.triggers[event].callback = null;
 	}
 };
 
