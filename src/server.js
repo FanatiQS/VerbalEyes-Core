@@ -251,14 +251,13 @@ Server.prototype.addOnClosed = function (callback) {
 	this.closedCount ++;
 	return (...args) => {
 		// Run callback for close event
-		if (callback) callback(...args);
+		callback(...args);
 
-		// Remove it and stop if this was not the last one
+		// Remove it from the counter
 		this.closedCount --;
-		if (this.closedCount) return;
 
-		// Log, everything is shut down
-		log(/@!/, "Teleprompter server shut down!");
+		// Log, everything is shut down if this was the last one
+		if (!this.closedCount) log(/@!/, "Teleprompter server shut down!");
 	};
 };
 
