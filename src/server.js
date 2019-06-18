@@ -175,7 +175,7 @@ Server.prototype.getProj = function (projID, init, callback) {
 				}
 				// Log, 'loadProj' callback has already been called
 				else if (err.code === 'BLOCKED') {
-					log.err("Settings for '" + projID + "' has already been received").ERROR(err);
+					log.err("Settings has already been received for:", projID).ERROR(err);
 				}
 				// Log, loader got an error
 				else {
