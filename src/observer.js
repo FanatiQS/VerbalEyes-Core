@@ -1,7 +1,7 @@
 'use strict';
 
 // Add middleware to objects property to run callback when value is updated
-module.exports = function observer(obj, key, callback) {
+exports.observe = function observe(obj, key, callback) {
 	// Get original/current properties
 	const descriptor = Object.getOwnPropertyDescriptor(obj, key) || {};
 

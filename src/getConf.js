@@ -115,7 +115,7 @@ module.exports = function (confInput1, confInput2, observers) {
 	const conf = getObj(confInput1);
 
 	// Set up observer for every property in 'observers' on 'conf' and fire observers callback on change
-	Object.keys(observers).forEach((key) => observer(conf, key, observers[key]));
+	Object.keys(observers).forEach((key) => observer.observe(conf, key, observers[key]));
 
 	// Handle locked properties from 'confInput2'
 	if (confInput2) {
