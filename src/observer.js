@@ -5,9 +5,6 @@ exports.observe = function observe(obj, key, callback) {
 	// Get original/current properties
 	const descriptor = Object.getOwnPropertyDescriptor(obj, key) || {};
 
-	// Abort if a middleware already exists
-	if (descriptor.set && descriptor.set.mid) return;
-
 	// Create getter and setter linked to value if getter and setter doesn't exist
 	if (!(descriptor.get || descriptor.set)) {
 		descriptor.get = function () {
