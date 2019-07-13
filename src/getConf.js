@@ -129,8 +129,8 @@ module.exports = function (confInput1, confInput2, observers) {
 
 				// Update 'confInput2' property if 'conf' has setter middleware
 				const descriptor = Object.getOwnPropertyDescriptor(conf, key);
-				const mid = descriptor && descriptor.set && descriptor.set.mid;
-				if (mid) {
+				const setter = descriptor && descriptor.set;
+				if (setter.mid) {
 					// Get property descriptor of 'confInput2'
 					const conf2Desc = Object.getOwnPropertyDescriptor(confInput2, key);
 
@@ -146,9 +146,11 @@ module.exports = function (confInput1, confInput2, observers) {
 
 					// Set up getter/setter on 'confInput2'
 					Object.defineProperty(confInput2, key, {
-						get: conf2Desc.get,
+						get: (!conf2Desc.get) ? undefined : function () {
+							return setter.deepObserver.topGetter(conf2Desc.get());
+						},
 						set: (!conf2Desc.set) ? undefined : function (value) {
-							mid(value, this[key]);
+							setter.mid(value, this[key]);
 							conf2Desc.set(value);
 						}
 					});
