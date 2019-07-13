@@ -8,7 +8,7 @@ exports.observe = function observe(obj, key, callback) {
 	// Abort if a middleware already exists
 	if (descriptor.set && descriptor.set.mid) return;
 
-	// Create getter and setter linked to value if no getter or setter already exist
+	// Create getter and setter linked to value if getter and setter doesn't exist
 	if (!(descriptor.get || descriptor.set)) {
 		descriptor.get = function () {
 			return descriptor.value;
@@ -18,30 +18,30 @@ exports.observe = function observe(obj, key, callback) {
 		};
 	}
 
-	// Create setter function unless 'obj' is getter only
-	if (descriptor.set) {
-		var setter = function (value) {
-			// Run middleware with new and old property value
-			setter.mid(value, this[key]);
+	// Abort if property is getter only
+	if (!descriptor.set) return;
 
-			// Run setter function
-			descriptor.set(value);
-		};
+	// Redefine setter function to run middleware
+	const setter = function (value) {
+		// Run middleware with new property value
+		setter.mid(value);
 
-		// Create middleware function
-		setter.mid = (value, current) => {
-			// Make property visible if it is hidden
-			if (!obj.propertyIsEnumerable()) {
-				Object.defineProperty(obj, key, {
-					enumerable: true
-				});
-			}
+		// Run setter function
+		descriptor.set(value);
+	};
 
-			// Run callback with new and old value as arguments
-			callback(value, current);
-		};
-	}
+	// Create middleware function
+	setter.mid = (value) => {
+		// Make property visible if it is hidden
+		if (!obj.propertyIsEnumerable()) {
+			Object.defineProperty(obj, key, {
+				enumerable: true
+			});
+		}
 
+		// Run callback with new value as arguments
+		callback(value);
+	};
 	// Set property to use getter/setter
 	Object.defineProperty(obj, key, {
 		get: descriptor.get,
