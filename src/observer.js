@@ -14,7 +14,7 @@ function DeepObserve(callback) {
 
 	// Return top value
 	return this.top;
-};
+}
 
 // Proxy value if it is an object
 DeepObserve.prototype.topGetter = function (value) {
