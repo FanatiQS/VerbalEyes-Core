@@ -1,5 +1,7 @@
 'use strict';
 
+const isObj = require('./isObj');
+
 
 
 // Create shared prototype
@@ -18,7 +20,7 @@ function DeepObserve(callback) {
 
 // Proxy value if it is an object
 DeepObserve.prototype.topGetter = function (value) {
-	return (typeof value !== 'object') ? value : this.getProxy(value);
+	return (!isObj(value)) ? value : this.getProxy(value);
 };
 
 // Get proxy for 'obj'
@@ -59,7 +61,7 @@ DeepObserve.prototype.nextCallback = function () {
 // Create object path for setter
 DeepObserve.prototype.get = function (target, key) {
 	// Return untouched value unless it is an object
-	if (typeof target[key] !== 'object') return target[key];
+	if (!isObj(target[key])) return target[key];
 
 	// Create child object if it does not exist
 	if (!this.children[key]) this.children[key] = Object.create(this.prototype);
