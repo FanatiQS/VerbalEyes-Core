@@ -1,5 +1,6 @@
 'use strict';
 
+const log = require('./log');
 const isObj = require('./isObj');
 
 
@@ -160,5 +161,80 @@ exports.observe = function observe(obj, key, callback) {
 		},
 		set: setter,
 		configurable: true
+	});
+};
+
+
+
+// Update changed values from 'newObj' in 'oldObj' including child properties
+exports.applyChange = function (oldObj, newObj, keyPath = '') {
+	Object.keys({...oldObj, ...newObj}).forEach((key) => {
+		// Abort if values are the same
+		if (newObj[key] === oldObj[key]) return;
+
+		// Display error message for updating locked properties
+		const descriptor = Object.getOwnPropertyDescriptor(oldObj, key);
+		if (descriptor && !descriptor.configurable) {
+			if (newObj.hasOwnProperty(key)) {
+				log.err("Unable to modify locked property:", key);
+			}
+		}
+		// Add new properties not existing/visible in oldObj
+		else if (!oldObj.propertyIsEnumerable(key)) {
+			// Add/update property
+			try {
+				oldObj[key] = newObj[key];
+			}
+			// Error handling for if updating property failed
+			catch (err) {
+				log.err("Unable to add property:", key).ERROR(err);
+				return;
+			}
+
+			// Make hidden properties visible
+			if (oldObj.hasOwnProperty(key)) {
+				Object.defineProperty(oldObj, key, {enumerable: true});
+			}
+
+			// Log, added new property
+			log("Added property '" + keyPath + key + "' with value:", newObj[key]);
+		}
+		// Delete/hide properties not existing in newObj
+		else if (!newObj.hasOwnProperty(key)) {
+			// Delete value properties
+			if (descriptor.value) {
+				delete oldObj[key];
+			}
+			// Hide get/set properties
+			else {
+				if (descriptor.set) descriptor.set(undefined);
+				Object.defineProperty(oldObj, key, {enumerable: false})
+			}
+
+			// Log, removed property
+			log("Removed property:", key);
+		}
+		// Combine objects properties
+		else if (
+			typeof newObj[key] === 'object' &&
+			typeof oldObj[key] === 'object'
+		) {
+			exports.applyChange(oldObj[key], newObj[key], key + '/');
+		}
+		// Update property with value from newObj
+		else {
+			// Update property
+			try {
+				oldObj[key] = newObj[key];
+			}
+			// Error handling for if updating property failed
+			catch (err) {
+				log.err("Unable to update property:", key).ERROR(err);
+				return
+			}
+
+			// Log, updated existing property
+			log("Updated property '" + keyPath + key + "' to:", newObj[key]);
+		}
 	});
 };
