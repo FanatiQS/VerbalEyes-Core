@@ -138,7 +138,7 @@ exports.observe = function observe(obj, key, callback) {
 		}
 
 		// Reset proxy since proxied object changes
-		setter.deepObserver.proxy = null;
+		if (setter.deepObserver.proxy) setter.deepObserver.proxy = null;
 
 		// Commit changes to argument value if 'callback' is already cued
 		if (callback.wait) {
