@@ -107,8 +107,12 @@ exports.observe = function observe(obj, key, callback) {
 	// Get original/current properties
 	const descriptor = Object.getOwnPropertyDescriptor(obj, key) || {};
 
-	// Create getter and setter linked to value if getter and setter doesn't exist
-	if (!(descriptor.get || descriptor.set)) {
+	// Handle missing setter function
+	if (!descriptor.set) {
+		// Abort if property is getter only
+		if (descriptor.get) return
+
+		// Create getter and setter linked to value if getter and setter doesn't exist
 		descriptor.get = function () {
 			return descriptor.value;
 		};
@@ -116,9 +120,6 @@ exports.observe = function observe(obj, key, callback) {
 			descriptor.value = value;
 		};
 	}
-
-	// Abort if property is getter only
-	if (!descriptor.set) return;
 
 	// Redefine setter function to run middleware
 	const setter = function (value) {
