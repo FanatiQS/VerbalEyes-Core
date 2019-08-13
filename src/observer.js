@@ -213,7 +213,7 @@ exports.applyChange = function (oldObj, newObj, keyPath = '') {
 			}
 
 			// Log, removed property
-			log("Removed property:", key);
+			log("Removed property:", keyPath + key);
 		}
 		// Combine objects properties
 		else if (
