@@ -1,0 +1,11 @@
+<svg viewBox="-4 0 136 80" xmlns="http://www.w3.org/2000/svg">
+	<path d="M 0 40 C 32 0, 96 0, 128 42, 96 80, 32 80, 0 40 z" stroke-width="5" stroke="black" fill="transparent"/>
+	<path d="M 96 64 C 96 64, 104 77, 122 72 C 110 68, 108 58, 108 58"/>
+	<circle cx="40" cy="40" r="8"/>
+	<circle cx="88" cy="40" r="8"/>
+	<mask id="eyelight">
+		<rect x="0" y="0" width="100%" height="100%" fill="white"/>
+		<circle cx="72" cy="30" r="6"/>
+	</mask>
+	<circle cx="64" cy="40" r="12" mask="url(#eyelight)"/>
+</svg>
