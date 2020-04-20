@@ -1,9 +1,12 @@
-<svg viewBox="-4 0 136 80" xmlns="http://www.w3.org/2000/svg">
-	<path d="M 0 40 C 32 0, 96 0, 128 40, 96 80, 32 80, 0 40 z" stroke-width="5" stroke="currentColor" fill="transparent"/>
-	<path d="M 96 64 C 96 64, 104 77, 122 72 C 110 68, 108 58, 108 58" fill="currentColor"/>
-	<circle cx="40" cy="40" r="8" fill="currentColor"/>
-	<circle cx="88" cy="40" r="8" fill="currentColor"/>
+<svg viewBox="0 0 128 80" xmlns="http://www.w3.org/2000/svg">
+	<path d="M 0 40 C 32 0 96 0 128 40
+		M 122 40 C 90 6 38 6 6 40, 38 74 90 74 122 40
+		M 128 40 C 96 80 32 80 0 40"/>
+	<path d="M 90 64 c 0 0 8 13 26 8, -12 -4 -14 -14 -14 -14"/>
+	<circle cx="40" cy="40" r="8"/>
+	<circle cx="88" cy="40" r="8"/>
 	<path d="M 66.4949402898 28.2622287912
-		A 12 12 0 0 0 61.5050597102 51.7377712088, 12 12 0 0 0 74.9625454917 35.1191602831
-		6 6 0 0 1 66.4949402898 28.2622287912 z" fill="currentColor"/>
+		A 12 12 0 0 0 61.5050597102 51.7377712088,
+		12 12 0 0 0 74.9625454917 35.1191602831,
+		6 6 0 0 1 66.4949402898 28.2622287912 z"/>
 </svg>
