@@ -1,5 +1,5 @@
 # Teleprompter
-## IT DOES NOT WORK YET!!!!!!!
+## The server is undergoing heavy restructuring and will hopefully soon begin getting updates again
 This project is very much a work in progress!!!
 The documentation is far from thought trough.
 
