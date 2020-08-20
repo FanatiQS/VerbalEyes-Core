@@ -20,7 +20,7 @@
 	},
 	"homepage": "https://github.com/FanatiQS/teleprompter-server#readme",
 	"dependencies": {
-		"bcrypt": "^3.0.2",
+		"bcrypt": "^5.0.0",
 		"quill-delta": "^4.2.0",
 		"ws": "^6.1.0"
 	}
